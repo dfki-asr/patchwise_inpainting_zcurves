@@ -13,6 +13,8 @@ set(LIBRARY_OUTPUT_PATH    ${EXECUTABLE_OUTPUT_PATH})
 include(CommonFlags)
 include(GetSourceFiles)
 include(PrecompiledHeaders)
+INCLUDE(CopyDlls)
+INCLUDE(CopyInpaintingDlls)
 include(Cpp11)
 
 SwitchOnCpp11()

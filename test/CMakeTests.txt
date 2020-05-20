@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
 INCLUDE(CommonFlags)
-INCLUDE(CopyDlls)
 
 add_definitions(/DTESTDATA_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 
