@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 2.8)
+
+INCLUDE(CommonFlags)
+INCLUDE(CopyDlls)
+
+add_definitions(/DTESTDATA_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
+
+# generate source tree
+set(ALL_LIST_DIRS "")
+set(FILE_TYPES *.c *.cc *.cpp *.h *.hpp *.tcc)
+foreach(TEST_SOURCE_DIR ${TEST_SOURCE_DIRS})
+    find_directories(DIRS ${TEST_SOURCE_DIR} "${FILE_TYPES}")
+    set(ALL_LIST_DIRS "${ALL_LIST_DIRS};${DIRS}")
+endforeach()
+generate_source_tree(HOST_SOURCES "${ALL_LIST_DIRS}" "${FILE_TYPES}")
+
+# set include directories
+include_directories("${INPAINTING_DEPENDENCIES_ROOT}"
+					"${FREEIMAGE_INCLUDE_DIR}"
+					"${MKL_INCLUDE_DIR}"
+					"${DAAL_INCLUDE_DIR}"
+                    "${RAPID_XML_INCLUDE_DIR}"
+					"${GTEST_INCLUDE_DIR}"
+					"${MEMORYMANAGER_INCLUDE_DIR}"
+                    "${LIBTP_INCLUDE_DIR}"
+					"${LIBMMV_INCLUDE_DIR}"
+					"${LIBCFG_INCLUDE_DIR}"
+					"${LIBINPAINTING_INCLUDE_DIR}"
+					"${TEST_INCLUDE_DIR}")
+
+add_executable(${PROJECT_NAME} 
+			   ${HOST_SOURCES}
+)
+
+target_link_libraries(${PROJECT_NAME} 
+                      ${MKL_LIBRARIES}
+                      ${DAAL_LIBRARIES}
+                      libMMV
+                      libCFG
+                      libThreadPool
+                      libInpainting
+)
+
+add_precompiled_header(${PROJECT_NAME} stdafx.h)
+
+CopyDlls()
+CopyInpaintingDlls()

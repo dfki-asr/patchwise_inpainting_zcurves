@@ -1,0 +1,59 @@
+#include "stdafx.h"
+
+#include "ComputeFrontInitializer.h"
+#include "framework/Framework.h"
+#include "algorithm/volumemanipulation/VolumeConvolutionOperator.h"
+#include "model/volume/GPUMappedVolume.h"
+#include "model/volume/FloatVolume.h"
+#include "model/volume/ByteVolume.h"
+#include "computeorder/ComputeFront.h"
+#include "computeorder/ComputeOrder.h"
+#include "StatusFlags.h"
+#include "ProgressReporter.h"
+
+#include "io/serializer/VolumeSerializer.h"
+#include "setup/parameterset/OutputParameterSet.h"
+
+#include <thread>
+
+namespace ettention
+{
+    namespace inpainting
+    {
+
+        ComputeFrontInitializer::ComputeFrontInitializer(Framework* framework, ComputeOrder* priority, Vec3ui patchSize, ProgressReporter* progress)
+            : progress(progress)
+            , framework( framework )
+            , priority(priority)
+            , patchSize(patchSize)
+        {
+<<<<<<< Updated upstream
+=======
+            floatRepresentationOfMask = createFloatRepresentationOfMask( maskVolume->getObjectOnCPU() );
+            floatRepresentationOfMaskOnGPU = new GPUMappedVolume(framework->getOpenCLStack(), floatRepresentationOfMask, true);
+            gradientVolume = new FloatVolume( maskVolume->getProperties().getVolumeResolution(), 1.0f );
+            gradientVolumeOnGPU = new GPUMappedVolume(framework->getOpenCLStack(), gradientVolume, true);
+            initializeStencil();
+            fillFrontVolumeConvolution = new VolumeConvolutionOperator(framework, floatRepresentationOfMaskOnGPU, gradientVolumeOnGPU, stencilVolumeOnGPU);
+>>>>>>> Stashed changes
+        }
+
+        ComputeFrontInitializer::~ComputeFrontInitializer()
+        {
+        }
+
+        ComputeFront* ComputeFrontInitializer::generateComputeFront( )
+        {
+			ComputeFront* front = new ComputeFront();
+			priority->front = front;
+			sizeOfTargetArea = priority->growFront( priority->getMask()->getProperties().getMemoryBoundingBox() );
+			return front;
+        }
+
+        size_t ComputeFrontInitializer::getSizeOfTargetArea()
+        {
+            return sizeOfTargetArea;
+        }
+
+    } // namespace inpainting
+} // namespace ettention

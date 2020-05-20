@@ -1,0 +1,12 @@
+#pragma once
+
+#define SOURCE_REGION 255
+#define EMPTY_REGION 254
+#define UNRELIABLE_REGION 128
+#define INPAINTED_REGION 127
+#define TARGET_REGION 0
+
+#define SUB_PATCH_AVERAGING 1001
+#define SINGLE_PIXEL 1002
+
+#define DONT_DEBUG -1
