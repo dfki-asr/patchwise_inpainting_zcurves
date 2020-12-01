@@ -243,6 +243,7 @@ namespace ettention
         ParameterSource* InpaintingFrontEnd::handleCommandLine(int argc, char* argv[])
         {
             auto commandLineParameterSource = new InpaintingParameterSource(argc, argv);
+            commandLineParameterSource->parse();
 
             if (!commandLineParameterSource->parameterExists("config"))
                 return commandLineParameterSource;
@@ -252,7 +253,7 @@ namespace ettention
             auto xmlParameterSource = new XMLParameterSource( configFileName );
 
             auto cascadingParameterSource = new CascadingParameterSource();
-            cascadingParameterSource->addSource(parameterSource);
+            cascadingParameterSource->addSource(commandLineParameterSource);
             cascadingParameterSource->parseAndAddSource(xmlParameterSource);
 
             return cascadingParameterSource;

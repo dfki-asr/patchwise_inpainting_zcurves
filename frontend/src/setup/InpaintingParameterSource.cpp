@@ -16,7 +16,7 @@ namespace ettention
     InpaintingParameterSource::InpaintingParameterSource(int argc, char* argv[])
         : CommandLineParameterSource(argc, argv)
     {
-        declareAcceptedOptions();
+        // declareAcceptedOptions();
     }
 
     InpaintingParameterSource::~InpaintingParameterSource()
