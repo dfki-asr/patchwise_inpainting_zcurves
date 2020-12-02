@@ -7,16 +7,9 @@
 namespace ettention
 {
 
-    /*InpaintingParameterSource::InpaintingParameterSource(const std::vector<std::string>& argv)
-        : CommandLineParameterSource( argc, argv )
-    {
-        declareAcceptedParameters();
-    } */
-
     InpaintingParameterSource::InpaintingParameterSource(int argc, char* argv[])
         : CommandLineParameterSource(argc, argv)
     {
-        // declareAcceptedOptions();
     }
 
     InpaintingParameterSource::~InpaintingParameterSource()
