@@ -96,7 +96,7 @@ namespace ettention
 			Vec3i resolutionInt;
 
 			bool verbose = true;
-			float totalCostOfCurrentNNF = std::numeric_limits<float>::max();
+			float totalCostOfCurrentNNF = (std::numeric_limits<float>::max)();
 			float iterateIfBelowFactorInitUnreliable = 0.9F;
 			float iterateIfBelowFactorInpaint = 0.9F;
         };
