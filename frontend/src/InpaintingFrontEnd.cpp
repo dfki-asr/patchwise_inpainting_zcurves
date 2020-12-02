@@ -29,7 +29,7 @@
 #include "patchselection/PatchMatchPatchSelection.h"
 #include "computeorder/ConfidenceOrder.h"
 #include "computeorder/BWCriminisiOrder.h"
-#include "computeorder/RGBCriminisiOrder.h"
+#include "computeorder/MultiChannelCriminisiOrder.h"
 #include "computeorder/HighConfidenceOrder.h"
 #include "computeorder/MissingWedgeOrder.h"
 
@@ -157,9 +157,9 @@ namespace ettention
 				auto priority = new HighConfidenceOrder(problem, innerOrder, 3);
 				return priority;
 			}
-			if (parameterStorage.priorityName == "rgb")
+			if (parameterStorage.priorityName == "multichannel_criminisi")
 			{
-				auto priority = new RGBCriminisiOrder( problem, progress, parameterStorage.regularizeConfidence );
+				auto priority = new MultiChannelCriminisiOrder( problem, progress, parameterStorage.regularizeConfidence );
 				priority->init();
 				return priority;
 			}

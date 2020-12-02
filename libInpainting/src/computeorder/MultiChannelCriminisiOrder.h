@@ -8,16 +8,18 @@ namespace ettention
     {
 		class Index;
 
-        class RGBCriminisiOrder : public CriminisiOrder
+        class MultiChannelCriminisiOrder : public CriminisiOrder
         {
         public:
-			RGBCriminisiOrder( Problem* problem, ProgressReporter* progress, bool regularizeConfidence = false);
-            ~RGBCriminisiOrder();
+			MultiChannelCriminisiOrder( Problem* problem, ProgressReporter* progress, bool regularizeConfidence = false);
+            ~MultiChannelCriminisiOrder();
 
 			virtual void addCoordinateToFront(Vec3ui coordinate) override;
 			virtual int growFront(BoundingBox3i region) override;
 		protected:
 			Index* index;
+            int z_resolution;
+            int z_center;
         };
 
     } // namespace inpainting

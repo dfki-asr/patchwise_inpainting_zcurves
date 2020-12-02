@@ -13,12 +13,12 @@ namespace ettention
 
 	namespace inpainting
 	{
-		class RGBDataTerm : public DataTerm
+		class MultiChannelDataTerm : public DataTerm
 		{
 		public:
 			// maskVolume must be a float volume that contains 0.0 in the target region and 1.0 in the source region
-			RGBDataTerm(Volume* dataVolume, ByteVolume* maskVolume, Vec3ui patchSize);
-			~RGBDataTerm();
+			MultiChannelDataTerm(Volume* dataVolume, ByteVolume* maskVolume, Vec3ui patchSize);
+			~MultiChannelDataTerm();
 
 			float computeDataTermForOneVoxel(Vec3ui voxelCoord, float alpha) override;
 			Vec2f computeImageGradient(Vec3ui voxelCoord);

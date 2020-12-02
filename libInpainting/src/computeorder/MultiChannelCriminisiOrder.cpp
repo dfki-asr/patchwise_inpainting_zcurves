@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "RGBCriminisiOrder.h"
+#include "MultiChannelCriminisiOrder.h"
 
 #include "Problem.h"
 #include "Confidence.h"
-#include "RGBDataTerm.h"
+#include "MultiChannelDataTerm.h"
 #include "index/Index.h"
 #include "StatusFlags.h"
 
@@ -13,21 +13,23 @@ namespace ettention
     namespace inpainting
     {
 
-		RGBCriminisiOrder::RGBCriminisiOrder( Problem* problem, ProgressReporter* progress,bool regularizeConfidence)
+		MultiChannelCriminisiOrder::MultiChannelCriminisiOrder( Problem* problem, ProgressReporter* progress,bool regularizeConfidence)
             : CriminisiOrder( problem, progress, regularizeConfidence)
         {
-			dataTerm = new RGBDataTerm(problem->data, problem->mask, problem->patchSize);
+			z_resolution = problem->data->getProperties().getVolumeResolution().z;
+			z_center = z_resolution / 2;
+			dataTerm = new MultiChannelDataTerm(problem->data, problem->mask, problem->patchSize);
 		}
 
-		RGBCriminisiOrder::~RGBCriminisiOrder()
+		MultiChannelCriminisiOrder::~MultiChannelCriminisiOrder()
         {
         }
 
-		int RGBCriminisiOrder::growFront(BoundingBox3i region)
+		int MultiChannelCriminisiOrder::growFront(BoundingBox3i region)
 		{
 			Vec3i coord;
 			int sizeOfTargetArea = 0;
-			coord.z = 1;
+			coord.z = z_center;
 			for (coord.y = region.getMin().y; coord.y <= region.getMax().y; coord.y++)
 			{
 				for (coord.x = region.getMin().x; coord.x <= region.getMax().x; coord.x++)
@@ -36,7 +38,7 @@ namespace ettention
 					unsigned char status = mask->nativeVoxelValue(index);
 
 					if (status == TARGET_REGION)
-						sizeOfTargetArea += 3;
+						sizeOfTargetArea += z_resolution;
 
 					if (status == TARGET_REGION || status == EMPTY_REGION)
 						continue;
@@ -50,9 +52,9 @@ namespace ettention
 			return sizeOfTargetArea;
 		}
 
-		void RGBCriminisiOrder::addCoordinateToFront(Vec3ui coordinate)
+		void MultiChannelCriminisiOrder::addCoordinateToFront(Vec3ui coordinate)
 		{
-			if (coordinate.z != 1)
+			if (coordinate.z != z_center)
 				return;
 			ComputeOrder::addCoordinateToFront(coordinate);
 		}
