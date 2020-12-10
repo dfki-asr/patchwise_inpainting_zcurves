@@ -33,14 +33,14 @@ namespace ettention
 
 			case IndexOptions::IndexType::ZCURVE_RGB:
 				progress->reportTaskStart("building 8 zcurve indices", 8.0f);
-				jobs.push_back( std::async( MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, DimensionSelection::TOPLEFT, options, progress, log, costFunctionOptions));
-				jobs.push_back( std::async( MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, DimensionSelection::TOPRIGHT, options, progress, log, costFunctionOptions));
-				jobs.push_back( std::async( MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, DimensionSelection::BOTTOMLEFT, options, progress, log, costFunctionOptions));
-				jobs.push_back( std::async( MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, DimensionSelection::BOTTOMRIGHT, options, progress, log, costFunctionOptions));
-				jobs.push_back( std::async( MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, DimensionSelection::TOPLEFT, options, progress, log, costFunctionOptions));
-				jobs.push_back( std::async( MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, DimensionSelection::BOTTOM, options, progress, log, costFunctionOptions));
-				jobs.push_back( std::async( MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, DimensionSelection::LEFT, options, progress, log, costFunctionOptions));
-				jobs.push_back( std::async( MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, DimensionSelection::RIGHT, options, progress, log, costFunctionOptions));
+
+				for (auto direction : {
+					DimensionSelection::TOPLEFT ,   DimensionSelection::TOPRIGHT,
+					DimensionSelection::BOTTOMLEFT, DimensionSelection::BOTTOMRIGHT,
+					DimensionSelection::TOP,        DimensionSelection::BOTTOM,
+					DimensionSelection::LEFT,       DimensionSelection::RIGHT }) {
+					jobs.push_back(std::async(MultiIndex::createZCurveIndex, threadPool, data, mask, dictionary, dictionaryPatches, patchSize, direction, options, progress, log, costFunctionOptions));
+				}
 				break;
 
 			case IndexOptions::IndexType::ZCURVE_3D:
@@ -56,7 +56,9 @@ namespace ettention
 			}
 
 			for (size_t i = 0; i < jobs.size(); i++)
+			{
 				indices.push_back(jobs[i].get());
+			}
 
 			progress->reportTaskEnd();
 		}
