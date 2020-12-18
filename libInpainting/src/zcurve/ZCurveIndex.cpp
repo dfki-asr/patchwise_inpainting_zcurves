@@ -4,6 +4,7 @@
 
 #include "costfunction/L1Distance.h"
 #include "costfunction/L2Distance.h"
+#include "costfunction/L2DistanceWithWeight.h"
 
 #include "zcurve/ZCurveOperator.h"
 #include "zcurve/PresortedDataSet.h"
@@ -82,6 +83,8 @@ namespace ettention
 				filterAndRefine = new FilterAndRefineImpl< L1Distance< BytePatchAccess8Bit > >( data, mask, dictionary, patchSize );
 			else if (costFunctionOptions->getCostFunctionType() == CostFunctionOptions::CostFunctionType::L2)
 				filterAndRefine = new FilterAndRefineImpl< L2Distance< BytePatchAccess8Bit > >( data, mask, dictionary, patchSize );
+			else if (costFunctionOptions->getCostFunctionType() == CostFunctionOptions::CostFunctionType::L2WithWeight)
+				filterAndRefine = new FilterAndRefineImpl< L2DistanceWithWeight< BytePatchAccess8Bit > >(data, mask, dictionary, patchSize);
 			else
 				throw std::runtime_error("illegal cost function type");
 		}
@@ -94,6 +97,8 @@ namespace ettention
 					knnQuery = new ParallelKNNQuery< L1Distance< NDPoint > >(threadPool, dataset, filterSize, minRecursionSize, minParallelizationSize, log);
 				else if (costFunctionOptions->getCostFunctionType() == CostFunctionOptions::CostFunctionType::L2)
 					knnQuery = new ParallelKNNQuery< L2Distance< NDPoint > >(threadPool, dataset, filterSize, minRecursionSize, minParallelizationSize, log);
+				else if (costFunctionOptions->getCostFunctionType() == CostFunctionOptions::CostFunctionType::L2WithWeight)
+					knnQuery = new ParallelKNNQuery< L2DistanceWithWeight< NDPoint > >(threadPool, dataset, filterSize, minRecursionSize, minParallelizationSize, log);
 				else
 					throw std::runtime_error("illegal cost function type");
 			}
@@ -103,6 +108,8 @@ namespace ettention
 					knnQuery = new ZCurveKNNQuery< L1Distance< NDPoint > >(dataset, filterSize, minRecursionSize, log);
 				else if (costFunctionOptions->getCostFunctionType() == CostFunctionOptions::CostFunctionType::L2)
 					knnQuery = new ZCurveKNNQuery< L2Distance< NDPoint > >(dataset, filterSize, minRecursionSize, log);
+				else if (costFunctionOptions->getCostFunctionType() == CostFunctionOptions::CostFunctionType::L2WithWeight)
+					knnQuery = new ZCurveKNNQuery< L2DistanceWithWeight< NDPoint > >(dataset, filterSize, minRecursionSize, log);
 				else
 					throw std::runtime_error("illegal cost function type");
 			}

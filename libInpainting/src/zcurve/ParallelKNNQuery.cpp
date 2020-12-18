@@ -5,6 +5,7 @@
 #include "patchselection/Log.h"
 #include "costfunction/L1Distance.h"
 #include "costfunction/L2Distance.h"
+#include "costfunction/L2DistanceWithWeight.h"
 
 namespace ettention
 {
@@ -166,9 +167,11 @@ namespace ettention
 
 		template class KNNQueryJob< L1Distance< NDPoint> >;
 		template class KNNQueryJob< L2Distance< NDPoint> >;
+		template class KNNQueryJob< L2DistanceWithWeight< NDPoint> >;
 
 		template class ParallelKNNQuery< L1Distance< NDPoint> >;
 		template class ParallelKNNQuery< L2Distance< NDPoint> >;
+		template class ParallelKNNQuery< L2DistanceWithWeight< NDPoint> >;
 
 	} // namespace inpainting
 } // namespace ettention

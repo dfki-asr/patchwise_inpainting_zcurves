@@ -38,6 +38,8 @@ namespace ettention
 				return CostFunctionOptions::CostFunctionType::L1;
 			if (value == "L2")
 				return CostFunctionOptions::CostFunctionType::L2;
+			if (value == "L2_with_weight")
+				return CostFunctionOptions::CostFunctionType::L2WithWeight;
 			throw std::invalid_argument("illegal CostFunctionType " + value );
 		}
 

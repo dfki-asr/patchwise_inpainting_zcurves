@@ -5,6 +5,7 @@
 #include "patchselection/Log.h"
 #include "costfunction/L1Distance.h"
 #include "costfunction/L2Distance.h"
+#include "costfunction/L2DistanceWithWeight.h"
 
 namespace ettention
 {
@@ -222,6 +223,7 @@ namespace ettention
 
 		template class ZCurveKNNQuery<L1Distance<NDPoint> >;
 		template class ZCurveKNNQuery<L2Distance<NDPoint> >;
+		template class ZCurveKNNQuery<L2DistanceWithWeight<NDPoint> >;
 
 	} // namespace inpainting
 } // namespace ettention

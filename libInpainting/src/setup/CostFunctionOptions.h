@@ -15,6 +15,7 @@ namespace ettention
 			{
 				L1,
 				L2,
+				L2WithWeight,
 			};
 
 			CostFunctionOptions();

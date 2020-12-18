@@ -3,6 +3,7 @@
 #include "FilterAndRefine.h"
 #include "costfunction/L1Distance.h"
 #include "costfunction/L2Distance.h"
+#include "costfunction/L2DistanceWithWeight.h"
 
 namespace ettention
 {
@@ -60,6 +61,7 @@ namespace ettention
 
 		template class FilterAndRefineImpl< L1Distance<BytePatchAccess8Bit> >;
 		template class FilterAndRefineImpl< L2Distance<BytePatchAccess8Bit> >;
+		template class FilterAndRefineImpl< L2DistanceWithWeight<BytePatchAccess8Bit> >;
 
 	} // namespace
 } // namespace

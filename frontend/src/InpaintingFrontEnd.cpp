@@ -20,6 +20,7 @@
 #include "dictionary/Dictionary.h"
 #include "costfunction/L1CostFunction.h"
 #include "costfunction/L2CostFunction.h"
+#include "costfunction/L2CostFunctionWithWeight.h"
 #include "costfunction/FusingL1CostFunction.h"
 #include "costfunction/FusingL2CostFunction.h"
 #include "dictionary/FullDictionaryBuilder.h"
@@ -103,6 +104,10 @@ namespace ettention
 			{
 				return new L2CostFunction( problem, dictionary );
 			}
+            if (parameterStorage.costFunctionName == "L2_with_weight")
+            {
+                return new L2CostFunctionWithWeight(problem, dictionary);
+            }
 			if (parameterStorage.costFunctionName == "L1")
 			{
                 return new L1CostFunction(problem, dictionary);
