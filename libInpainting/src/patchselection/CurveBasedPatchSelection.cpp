@@ -116,6 +116,7 @@ namespace ettention
 		void CurveBasedPatchSelection::performBruteForceSearch()
 		{
 			dictionaryIntervals.push_back(getSearchIntervalForBruteForceSearch());
+			costFunction->computeCostForAllIntervals(dictionaryIntervals);
 			bestCoordinate = findMinimumInResult();
 		}
 
@@ -129,6 +130,8 @@ namespace ettention
 
 		IndexInterval CurveBasedPatchSelection::getSearchIntervalForBruteForceSearch()
         {
+			if (dictionaryPatches.size() >= std::numeric_limits<int>::max())
+				throw std::runtime_error("dictionary size exceeds numeric limits");
             return IndexInterval( 0, (unsigned int) dictionaryPatches.size()-1 );
         }
 
