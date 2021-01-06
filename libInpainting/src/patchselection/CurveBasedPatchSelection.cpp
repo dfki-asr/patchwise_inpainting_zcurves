@@ -186,6 +186,7 @@ namespace ettention
 		void CurveBasedPatchSelection::setCenterOfTargetPatch( Vec3i centerOfTargetPatch )
 		{
 			this->centerOfTargetPatch = centerOfTargetPatch;
+			costFunction->setCenterOfTargetPatch( centerOfTargetPatch );
 			zeroDistanceRange = ndSpaceMapping->getZeroDistanceRangeForIncompletePatch(centerOfTargetPatch);
 		}
     } // namespace
