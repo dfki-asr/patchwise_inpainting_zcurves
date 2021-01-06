@@ -122,18 +122,18 @@ namespace ettention
         {
             if ( indexOptions->getIndexType() == IndexOptions::IndexType::NONE )
             {
-                auto compressedDictionary = dictionary->getCompressedDictionary();
+                auto& compressedDictionary = dictionary->getCompressedDictionary();
 				return new CurveBasedPatchSelection(costFunction, problem->data, problem->mask, problem->dictionaryVolume, compressedDictionary, problem->patchSize, debugParameters, optimizationParameters, indexOptions, costFunctionOptions, true, progress);
 			}
 			else if ( indexOptions->getIndexType() == IndexOptions::IndexType::PATCH_MATCH )
 			{
 				// compressed dictionary only placeholder till implemented
-				auto compressedDictionary = dictionary->getCompressedDictionary();
+				auto& compressedDictionary = dictionary->getCompressedDictionary();
 				return new PatchMatchPatchSelection(costFunction, problem->data, problem->mask, problem->dictionaryVolume, compressedDictionary, problem->patchSize, debugParameters, optimizationParameters, indexOptions, costFunctionOptions, true, progress);
 			}
 			else 
             {
-                auto compressedDictionary = dictionary->getCompressedDictionary();
+                auto& compressedDictionary = dictionary->getCompressedDictionary();
 				return new CurveBasedPatchSelection(costFunction, problem->data, problem->mask, problem->dictionaryVolume, compressedDictionary, problem->patchSize, debugParameters, optimizationParameters, indexOptions, costFunctionOptions, false, progress);
 			}
         }
