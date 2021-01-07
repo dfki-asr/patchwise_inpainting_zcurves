@@ -29,6 +29,7 @@ namespace ettention
 			void setPatchId(const Vec3ui patchCenter );
 			Vec3ui getPatchCenter();
 			void initOffsetLookup();
+			Vec3ui getPositionInVolume(unsigned int byteIndex);
 
         protected:
 			TVOLUME* volume;

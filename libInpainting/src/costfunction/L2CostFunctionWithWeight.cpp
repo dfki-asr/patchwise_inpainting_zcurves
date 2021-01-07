@@ -36,6 +36,15 @@ namespace ettention
 			float distance = 0.0f;
 			for (unsigned int i = 0; i < dataAccess.size(); i++)
 			{
+				std::cout << "dataAccess.size(): " << dataAccess.size() << std::endl;
+
+				/*
+				dataAccess.size() == 363 == 3 * 11 * 11;
+				3 + 3 + 3 + 3 + 3 ... ?
+				or
+				11*11 + 11*11 + 11*11 ?
+				*/
+
 				const unsigned char pixelStatus = maskAccess[i];
 				if (pixelStatus == EMPTY_REGION || pixelStatus == TARGET_REGION)
 					continue;

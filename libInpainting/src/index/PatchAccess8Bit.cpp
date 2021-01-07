@@ -66,6 +66,14 @@ namespace ettention
             }
         }
 
+		template<class TVOLUME>
+		Vec3ui PatchAccess8Bit<TVOLUME>::getPositionInVolume(unsigned int byteIndex)
+		{
+			const Vec3ui volumeResolution = volume->getProperties().getVolumeResolution();
+			const size_t flatVoxelPosition = flatBaseAddress + offsetLookup[byteIndex];
+			return Unflatten3D(flatVoxelPosition, volumeResolution);
+		}
+
 		std::ostream& operator<<(std::ostream& ofs, const FloatPatchAccess8Bit& access)
 		{
 			for (unsigned int i = 0; i < (unsigned int)access.size(); i++)
