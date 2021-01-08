@@ -22,6 +22,7 @@ namespace ettention
 			ByteVolume* dictionaryVolume;
 			ByteVolume* dictionaryMask;
             Vec3i patchSize;
+            std::vector<float> costWeight;
         };
 
     } // namespace inpainting

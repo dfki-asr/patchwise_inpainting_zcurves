@@ -11,8 +11,10 @@ namespace ettention
     {
         class L2CostFunctionWithWeight: public DictionaryBasedCostFunctionKernel 
         {
+        private:
+            std::vector<float> costWeight;
         public:
-            L2CostFunctionWithWeight( Problem* problem, Dictionary* dictionary );
+            L2CostFunctionWithWeight( Problem* problem, Dictionary* dictionary);
             ~L2CostFunctionWithWeight();
 
             virtual void computeCostForInterval( IndexInterval interval ) override;

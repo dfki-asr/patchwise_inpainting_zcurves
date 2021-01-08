@@ -182,6 +182,7 @@ namespace ettention
         {
             problem = new Problem();
             problem->patchSize = parameterStorage.patchSize;
+            problem->costWeight = parameterStorage.costWeight;
 
             problem->data = dynamic_cast<ByteVolume*>(VolumeDeserializer::load(parameterStorage.sparseFileName.string(), Voxel::DataType::UCHAR_8));
 

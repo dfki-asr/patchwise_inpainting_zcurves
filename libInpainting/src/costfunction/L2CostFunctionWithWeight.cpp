@@ -3,6 +3,7 @@
 #include "L2CostFunctionWithWeight.h"
 #include "dictionary/Dictionary.h"
 #include "StatusFlags.h"
+#include "../../libInpainting/src/Problem.h"
 
 namespace ettention
 {
@@ -11,6 +12,15 @@ namespace ettention
 		L2CostFunctionWithWeight::L2CostFunctionWithWeight(Problem* problem, Dictionary* dictionary)
 			: DictionaryBasedCostFunctionKernel( problem, dictionary )
 		{
+			if (problem->patchSize.z != problem->costWeight.size()) {
+				std::ostringstream stringStream;
+				stringStream << "size of costWeight and patchSize.z don't match: ";
+				stringStream << "size of costWeight is " << problem->costWeight.size() << " while patchSize.z is " << problem->patchSize.z << std::endl;
+				std::string errorStr = stringStream.str();
+
+				throw std::runtime_error(errorStr);
+			}
+			costWeight = problem->costWeight;
 		}
 
 		L2CostFunctionWithWeight::~L2CostFunctionWithWeight()
@@ -36,23 +46,18 @@ namespace ettention
 			float distance = 0.0f;
 			for (unsigned int i = 0; i < dataAccess.size(); i++)
 			{
-				std::cout << "dataAccess.size(): " << dataAccess.size() << std::endl;
-
-				/*
-				dataAccess.size() == 363 == 3 * 11 * 11;
-				3 + 3 + 3 + 3 + 3 ... ?
-				or
-				11*11 + 11*11 + 11*11 ?
-				*/
-
 				const unsigned char pixelStatus = maskAccess[i];
 				if (pixelStatus == EMPTY_REGION || pixelStatus == TARGET_REGION)
 					continue;
+			
+				Vec3ui vIndex = dataAccess.getPositionInVolume(i);
+				
 				unsigned char pA = dictionaryAccess[i];
 				unsigned char pB = dataAccess[i];
 				const float distanceInDimension = (float)(pB - pA);
-				distance += distanceInDimension * distanceInDimension;
+				distance += distanceInDimension * distanceInDimension * costWeight[vIndex.z];
 			}
+
 			return std::sqrtf(distance);
 		}
 	}

@@ -32,7 +32,7 @@ namespace ettention
             if (denseScan != nullptr)
                 delete denseScan;
 
-            if( dictionaryVolume != nullptr && dictionaryVolume != data )
+            if (dictionaryVolume != nullptr && dictionaryVolume != data )
                 delete dictionaryVolume;
         }
 
