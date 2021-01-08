@@ -18,6 +18,7 @@ namespace ettention
         void initializeParameters(ParameterSource* parameterSource);
 
         Vec3ui patchSize;
+        std::vector<float> costWeight;
         std::filesystem::path sparseFileName;
         std::filesystem::path maskFileName;
         std::filesystem::path dictionaryFileName;

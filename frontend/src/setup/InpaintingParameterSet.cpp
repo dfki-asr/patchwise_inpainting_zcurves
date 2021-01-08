@@ -75,6 +75,11 @@ namespace ettention
             costFunctionName = parameterSource->getStringParameter("costFunction");
         }
 
+        if (parameterSource->parameterExists("costWeight"))
+        {
+            costWeight = parameterSource->getVecFloatParameter("costWeight");
+        }
+
         if( parameterSource->parameterExists("maximumNumberOfReturnedIntervalsPerTraversal") )
         {
             maximumNumberOfReturnedIntervalsPerTraversal = parameterSource->getUIntParameter("maximumNumberOfReturnedIntervalsPerTraversal");
