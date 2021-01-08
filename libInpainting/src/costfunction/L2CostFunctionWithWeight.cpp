@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <mutex>
 #include "L2CostFunctionWithWeight.h"
 #include "dictionary/Dictionary.h"
 #include "StatusFlags.h"
@@ -20,42 +21,130 @@ namespace ettention
 
 				throw std::runtime_error(errorStr);
 			}
-			costWeight = problem->costWeight;
 		}
 
 		L2CostFunctionWithWeight::~L2CostFunctionWithWeight()
 		{
 		}
+
+		void L2CostFunctionWithWeight::singleJob(std::mutex *mutex,
+												 std::stack<std::pair<int, int>>* totalJob,
+												 BytePatchAccess8Bit* ptrDictionaryAccess,
+												 BytePatchAccess8Bit* ptrDataAccess,
+												 BytePatchAccess8Bit* ptrMaskAccess)
+		{
+			while (true) {
+				mutex->lock();
+				if (totalJob->size() == 0) {
+					mutex->unlock();
+					return;
+				}
+				auto job = totalJob->top();
+				totalJob->pop();
+				mutex->unlock();
+
+				int sourcePatchIndex = job.first;
+				int vecPos = job.second;
+
+				ptrDictionaryAccess->setPatchId(sourcePatchIndex);
+				ptrDataAccess->setPatchId(indexOfTargetPatch);
+				ptrMaskAccess->setPatchId(indexOfTargetPatch);
+
+				float distance = 0.0f;
+				for (unsigned int i = 0; i < ptrDataAccess->size(); i++)
+				{
+					const unsigned char pixelStatus = (*ptrMaskAccess)[i];
+					if (pixelStatus == EMPTY_REGION || pixelStatus == TARGET_REGION)
+						continue;
+
+					Vec3ui vIndex = ptrDataAccess->getPositionInVolume(i);
+
+					unsigned char pA = (*ptrDictionaryAccess)[i];
+					unsigned char pB = (*ptrDataAccess)[i];
+					const float distanceInDimension = (float)(pB - pA);
+					distance += distanceInDimension * distanceInDimension * problem->costWeight[vIndex.z];
+				}
+
+				resultCost[vecPos] = distance;
+			}
+		}
 		
 		void L2CostFunctionWithWeight::computeCostForInterval(IndexInterval interval)
 		{
+			int numWorker = std::thread::hardware_concurrency() / 2;
+
+			std::vector<BytePatchAccess8Bit> multiWorkerDictionaryAccess;
+			std::vector<BytePatchAccess8Bit> multiWorkerDataAccess;
+			std::vector<BytePatchAccess8Bit> multiWorkerMaskAccess;
+
+			for (int idx = 0; idx < numWorker; idx++) {
+				multiWorkerDictionaryAccess.push_back(dictionaryAccess);
+				multiWorkerDataAccess.push_back(dataAccess);
+				multiWorkerMaskAccess.push_back(maskAccess);
+			}
+
+			std::stack<std::pair<int, int>> totalJob;
+			for (int dictionaryIndex = interval.first; dictionaryIndex <= interval.last; dictionaryIndex++)
+			{
+				const int sourcePatchIndex = dictionary->getCompressedDictionary()[dictionaryIndex];
+				totalJob.push(std::make_pair(sourcePatchIndex, dictionaryIndex - interval.first));
+			}
+
+			resultCost = std::vector<float>(totalJob.size());
+			std::vector<std::thread> allWorker;
+			std::mutex mutex;
+			for (int idx = 0; idx < numWorker; idx++)
+			{
+				allWorker.push_back(std::thread(&L2CostFunctionWithWeight::singleJob,
+												this, &mutex, &totalJob,
+												&(multiWorkerDictionaryAccess[idx]),
+												&(multiWorkerDataAccess[idx]),
+												&(multiWorkerMaskAccess[idx])));
+			}
+
+			for (auto& w : allWorker) {
+				w.join();
+			}
+
+			return;
+
+			// original single thread implementation
 			for (int dictionaryIndex = interval.first; dictionaryIndex <= interval.last; dictionaryIndex++)
 			{
 				const int patchIndex = dictionary->getCompressedDictionary()[ dictionaryIndex ];
-				const float cost = computeCostFunction( patchIndex );
+
+				dictionaryAccess.setPatchId(patchIndex);
+				dataAccess.setPatchId(indexOfTargetPatch);
+				maskAccess.setPatchId(indexOfTargetPatch);
+
+				const float cost = computeCostFunction( patchIndex, &dictionaryAccess, &dataAccess, &maskAccess);
+
 				resultCost.push_back(cost);
 			}
 		}
 
-		float L2CostFunctionWithWeight::computeCostFunction( unsigned int indexOfSourcePatch )
+		float L2CostFunctionWithWeight::computeCostFunction( unsigned int indexOfSourcePatch,
+															 BytePatchAccess8Bit *ptrDictionaryAccess,
+															 BytePatchAccess8Bit *ptrDataAccess,
+															 BytePatchAccess8Bit *ptrMaskAccess)
 		{
-			dictionaryAccess.setPatchId(indexOfSourcePatch);
-			dataAccess.setPatchId(indexOfTargetPatch);
-			maskAccess.setPatchId(indexOfTargetPatch);
+			ptrDictionaryAccess->setPatchId(indexOfSourcePatch);
+			ptrDataAccess->setPatchId(indexOfTargetPatch);
+			ptrMaskAccess->setPatchId(indexOfTargetPatch);
 
 			float distance = 0.0f;
-			for (unsigned int i = 0; i < dataAccess.size(); i++)
+			for (unsigned int i = 0; i < ptrDataAccess->size(); i++)
 			{
-				const unsigned char pixelStatus = maskAccess[i];
+				const unsigned char pixelStatus = (*ptrMaskAccess)[i];
 				if (pixelStatus == EMPTY_REGION || pixelStatus == TARGET_REGION)
 					continue;
 			
-				Vec3ui vIndex = dataAccess.getPositionInVolume(i);
+				Vec3ui vIndex = ptrDataAccess->getPositionInVolume(i);
 				
-				unsigned char pA = dictionaryAccess[i];
-				unsigned char pB = dataAccess[i];
+				unsigned char pA = (*ptrDictionaryAccess)[i];
+				unsigned char pB = (*ptrDataAccess)[i];
 				const float distanceInDimension = (float)(pB - pA);
-				distance += distanceInDimension * distanceInDimension * costWeight[vIndex.z];
+				distance += distanceInDimension * distanceInDimension * problem->costWeight[vIndex.z];
 			}
 
 			return std::sqrtf(distance);
