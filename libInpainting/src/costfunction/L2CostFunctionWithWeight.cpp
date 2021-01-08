@@ -92,7 +92,7 @@ namespace ettention
 				const int sourcePatchIndex = dictionary->getCompressedDictionary()[dictionaryIndex];
 				batchJob.push_back(std::make_pair(sourcePatchIndex, dictionaryIndex - interval.first));
 
-				if (batchJob.size() == 100 || dictionaryIndex == interval.last) {
+				if (batchJob.size() >= interval.length()/1000 || dictionaryIndex == interval.last) {
 					totalJob.push(batchJob);
 					batchJob.clear();
 				}
@@ -110,52 +110,9 @@ namespace ettention
 												&(multiWorkerMaskAccess[idx])));
 			}
 
-			for (auto& w : allWorker) {
-				w.join();
+			for (auto& worker : allWorker) {
+				worker.join();
 			}
-
-			return;
-
-			// original single thread implementation
-			for (int dictionaryIndex = interval.first; dictionaryIndex <= interval.last; dictionaryIndex++)
-			{
-				const int patchIndex = dictionary->getCompressedDictionary()[ dictionaryIndex ];
-
-				dictionaryAccess.setPatchId(patchIndex);
-				dataAccess.setPatchId(indexOfTargetPatch);
-				maskAccess.setPatchId(indexOfTargetPatch);
-
-				const float cost = computeCostFunction( patchIndex, &dictionaryAccess, &dataAccess, &maskAccess);
-
-				resultCost.push_back(cost);
-			}
-		}
-
-		float L2CostFunctionWithWeight::computeCostFunction( unsigned int indexOfSourcePatch,
-															 BytePatchAccess8Bit *ptrDictionaryAccess,
-															 BytePatchAccess8Bit *ptrDataAccess,
-															 BytePatchAccess8Bit *ptrMaskAccess)
-		{
-			ptrDictionaryAccess->setPatchId(indexOfSourcePatch);
-			ptrDataAccess->setPatchId(indexOfTargetPatch);
-			ptrMaskAccess->setPatchId(indexOfTargetPatch);
-
-			float distance = 0.0f;
-			for (unsigned int i = 0; i < ptrDataAccess->size(); i++)
-			{
-				const unsigned char pixelStatus = (*ptrMaskAccess)[i];
-				if (pixelStatus == EMPTY_REGION || pixelStatus == TARGET_REGION)
-					continue;
-			
-				Vec3ui vIndex = ptrDataAccess->getPositionInVolume(i);
-				
-				unsigned char pA = (*ptrDictionaryAccess)[i];
-				unsigned char pB = (*ptrDataAccess)[i];
-				const float distanceInDimension = (float)(pB - pA);
-				distance += distanceInDimension * distanceInDimension * problem->costWeight[vIndex.z];
-			}
-
-			return std::sqrtf(distance);
 		}
 	}
 }

@@ -23,10 +23,6 @@ namespace ettention
             ~L2CostFunctionWithWeight();
 
             virtual void computeCostForInterval( IndexInterval interval ) override;
-            float computeCostFunction(unsigned int indexOfSourcePatch,
-                BytePatchAccess8Bit* ptrDictionaryAccess,
-                BytePatchAccess8Bit* ptrDataAccess,
-                BytePatchAccess8Bit* ptrMaskAccess);
         };
     }
 }
