@@ -14,7 +14,7 @@ namespace ettention
         {
         private:
             void L2CostFunctionWithWeight::singleJob(std::mutex* mutex,
-                                                     std::stack<std::pair<int, int>>* totalJob,
+                                                     std::stack<std::vector<std::pair<int, int>>>* totalJob,
                                                      BytePatchAccess8Bit* ptrDictionaryAccess,
                                                      BytePatchAccess8Bit* ptrDataAccess,
                                                      BytePatchAccess8Bit* ptrMaskAccess);

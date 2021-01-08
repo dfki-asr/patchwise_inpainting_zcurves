@@ -28,7 +28,7 @@ namespace ettention
 		}
 
 		void L2CostFunctionWithWeight::singleJob(std::mutex *mutex,
-												 std::stack<std::pair<int, int>>* totalJob,
+												 std::stack<std::vector<std::pair<int, int>>>* totalJob,
 												 BytePatchAccess8Bit* ptrDictionaryAccess,
 												 BytePatchAccess8Bit* ptrDataAccess,
 												 BytePatchAccess8Bit* ptrMaskAccess)
@@ -39,33 +39,35 @@ namespace ettention
 					mutex->unlock();
 					return;
 				}
-				auto job = totalJob->top();
+				auto batchJob = totalJob->top();
 				totalJob->pop();
 				mutex->unlock();
 
-				int sourcePatchIndex = job.first;
-				int vecPos = job.second;
+				for (auto& job : batchJob) {
+					int sourcePatchIndex = job.first;
+					int vecPos = job.second;
 
-				ptrDictionaryAccess->setPatchId(sourcePatchIndex);
-				ptrDataAccess->setPatchId(indexOfTargetPatch);
-				ptrMaskAccess->setPatchId(indexOfTargetPatch);
+					ptrDictionaryAccess->setPatchId(sourcePatchIndex);
+					ptrDataAccess->setPatchId(indexOfTargetPatch);
+					ptrMaskAccess->setPatchId(indexOfTargetPatch);
 
-				float distance = 0.0f;
-				for (unsigned int i = 0; i < ptrDataAccess->size(); i++)
-				{
-					const unsigned char pixelStatus = (*ptrMaskAccess)[i];
-					if (pixelStatus == EMPTY_REGION || pixelStatus == TARGET_REGION)
-						continue;
+					float distance = 0.0f;
+					for (unsigned int i = 0; i < ptrDataAccess->size(); i++)
+					{
+						const unsigned char pixelStatus = (*ptrMaskAccess)[i];
+						if (pixelStatus == EMPTY_REGION || pixelStatus == TARGET_REGION)
+							continue;
 
-					Vec3ui vIndex = ptrDataAccess->getPositionInVolume(i);
+						Vec3ui vIndex = ptrDataAccess->getPositionInVolume(i);
 
-					unsigned char pA = (*ptrDictionaryAccess)[i];
-					unsigned char pB = (*ptrDataAccess)[i];
-					const float distanceInDimension = (float)(pB - pA);
-					distance += distanceInDimension * distanceInDimension * problem->costWeight[vIndex.z];
+						unsigned char pA = (*ptrDictionaryAccess)[i];
+						unsigned char pB = (*ptrDataAccess)[i];
+						const float distanceInDimension = (float)(pB - pA);
+						distance += distanceInDimension * distanceInDimension * problem->costWeight[vIndex.z];
+					}
+
+					resultCost[vecPos] = distance;
 				}
-
-				resultCost[vecPos] = distance;
 			}
 		}
 		
@@ -83,14 +85,20 @@ namespace ettention
 				multiWorkerMaskAccess.push_back(maskAccess);
 			}
 
-			std::stack<std::pair<int, int>> totalJob;
+			std::stack<std::vector<std::pair<int, int>>> totalJob;
+			std::vector<std::pair<int, int>> batchJob;
 			for (int dictionaryIndex = interval.first; dictionaryIndex <= interval.last; dictionaryIndex++)
 			{
 				const int sourcePatchIndex = dictionary->getCompressedDictionary()[dictionaryIndex];
-				totalJob.push(std::make_pair(sourcePatchIndex, dictionaryIndex - interval.first));
+				batchJob.push_back(std::make_pair(sourcePatchIndex, dictionaryIndex - interval.first));
+
+				if (batchJob.size() == 100 || dictionaryIndex == interval.last) {
+					totalJob.push(batchJob);
+					batchJob.clear();
+				}
 			}
 
-			resultCost = std::vector<float>(totalJob.size());
+			resultCost = std::vector<float>(interval.length());
 			std::vector<std::thread> allWorker;
 			std::mutex mutex;
 			for (int idx = 0; idx < numWorker; idx++)
