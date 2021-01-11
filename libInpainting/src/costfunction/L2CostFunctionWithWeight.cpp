@@ -27,11 +27,9 @@ namespace ettention
 		{
 		}
 
-		void L2CostFunctionWithWeight::singleJob(std::mutex *mutex,
-												 std::stack<std::vector<std::pair<int, int>>>* totalJob,
-												 BytePatchAccess8Bit* ptrDictionaryAccess,
-												 BytePatchAccess8Bit* ptrDataAccess,
-												 BytePatchAccess8Bit* ptrMaskAccess)
+		void L2CostFunctionWithWeight::computeCostSingleThread(std::mutex *mutex,
+															   std::stack<std::vector<std::pair<int, int>>>* totalJob,
+															   BytePatchAccess8Bit* ptrDictionaryAccess)
 		{
 			while (true) {
 				mutex->lock();
@@ -48,20 +46,18 @@ namespace ettention
 					int vecPos = job.second;
 
 					ptrDictionaryAccess->setPatchId(sourcePatchIndex);
-					ptrDataAccess->setPatchId(indexOfTargetPatch);
-					ptrMaskAccess->setPatchId(indexOfTargetPatch);
 
 					float distance = 0.0f;
-					for (unsigned int i = 0; i < ptrDataAccess->size(); i++)
+					for (unsigned int i = 0; i < dataAccess.size(); i++)
 					{
-						const unsigned char pixelStatus = (*ptrMaskAccess)[i];
+						const unsigned char pixelStatus = maskAccess[i];
 						if (pixelStatus == EMPTY_REGION || pixelStatus == TARGET_REGION)
 							continue;
 
-						Vec3ui vIndex = ptrDataAccess->getPositionInVolume(i);
+						Vec3ui vIndex = dataAccess.getPositionInVolume(i);
 
 						unsigned char pA = (*ptrDictionaryAccess)[i];
-						unsigned char pB = (*ptrDataAccess)[i];
+						unsigned char pB = dataAccess[i];
 						const float distanceInDimension = (float)(pB - pA);
 						distance += distanceInDimension * distanceInDimension * problem->costWeight[vIndex.z];
 					}
@@ -76,23 +72,19 @@ namespace ettention
 			int numWorker = std::thread::hardware_concurrency() / 2;
 
 			std::vector<BytePatchAccess8Bit> multiWorkerDictionaryAccess;
-			std::vector<BytePatchAccess8Bit> multiWorkerDataAccess;
-			std::vector<BytePatchAccess8Bit> multiWorkerMaskAccess;
-
 			for (int idx = 0; idx < numWorker; idx++) {
 				multiWorkerDictionaryAccess.push_back(dictionaryAccess);
-				multiWorkerDataAccess.push_back(dataAccess);
-				multiWorkerMaskAccess.push_back(maskAccess);
 			}
 
 			std::stack<std::vector<std::pair<int, int>>> totalJob;
 			std::vector<std::pair<int, int>> batchJob;
+			int sizePerBatch = std::max(interval.length() / 1000, (unsigned int)200);
 			for (int dictionaryIndex = interval.first; dictionaryIndex <= interval.last; dictionaryIndex++)
 			{
 				const int sourcePatchIndex = dictionary->getCompressedDictionary()[dictionaryIndex];
 				batchJob.push_back(std::make_pair(sourcePatchIndex, dictionaryIndex - interval.first));
 
-				if (batchJob.size() >= interval.length()/1000 || dictionaryIndex == interval.last) {
+				if (batchJob.size() >= sizePerBatch || dictionaryIndex == interval.last) {
 					totalJob.push(batchJob);
 					batchJob.clear();
 				}
@@ -101,13 +93,14 @@ namespace ettention
 			resultCost = std::vector<float>(interval.length());
 			std::vector<std::thread> allWorker;
 			std::mutex mutex;
+
+			dataAccess.setPatchId(indexOfTargetPatch);
+			maskAccess.setPatchId(indexOfTargetPatch);
 			for (int idx = 0; idx < numWorker; idx++)
 			{
-				allWorker.push_back(std::thread(&L2CostFunctionWithWeight::singleJob,
+				allWorker.push_back(std::thread(&L2CostFunctionWithWeight::computeCostSingleThread,
 												this, &mutex, &totalJob,
-												&(multiWorkerDictionaryAccess[idx]),
-												&(multiWorkerDataAccess[idx]),
-												&(multiWorkerMaskAccess[idx])));
+												&(multiWorkerDictionaryAccess[idx])));
 			}
 
 			for (auto& worker : allWorker) {
