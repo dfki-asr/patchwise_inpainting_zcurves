@@ -26,7 +26,7 @@ namespace ettention
 		dictionaryMaskGiven = false;
         regularizeConfidence = false;
         costFunctionName = "L2";
-        priorityName = "criminisi";
+        priorityName = "confidence";
         maximumNumberOfReturnedIntervalsPerTraversal = 100;
         printTraversalInformation = false;
     }
