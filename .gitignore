@@ -1,1 +1,4 @@
 /build
+/.vs
+/out
+/inpainting_dependencies

@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.19)
 
 project(Inpainting)
 
 # set cmake modules path
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/c3di_libs/cmake")
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/c3di_libs/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # redirect output directories
 set(CMAKE_BINARY_DIR       ${PROJECT_BINARY_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
@@ -13,8 +13,8 @@ set(LIBRARY_OUTPUT_PATH    ${EXECUTABLE_OUTPUT_PATH})
 include(CommonFlags)
 include(GetSourceFiles)
 include(PrecompiledHeaders)
-INCLUDE(CopyDlls)
-INCLUDE(CopyInpaintingDlls)
+include(CopyDlls)
+include(CopyInpaintingDlls)
 include(Cpp11)
 
 SwitchOnCpp11()
