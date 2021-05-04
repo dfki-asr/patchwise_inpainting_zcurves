@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.10)
 
 project(Inpainting)
 
@@ -32,7 +32,7 @@ add_subdirectory(c3di_libs/libCFG)
 # utilities
 add_subdirectory(libInpainting)
 add_dependencies(libInpainting MemoryManager)
-add_dependencies(libInpainting libMMV)
+add_dependencies(libInpainting libmmv)
 add_dependencies(libInpainting libCFG)
 add_dependencies(libInpainting libThreadPool)
 
