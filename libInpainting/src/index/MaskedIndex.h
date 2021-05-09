@@ -5,39 +5,39 @@
 
 class IDistance;
 
-namespace ettention
+namespace libmmv
 {
 	class ByteVolume;
+}
 	
-	namespace inpainting 
+namespace inpainting 
+{
+	class MaskedIndex : public Index
 	{
-		class MaskedIndex : public Index
-		{
-		public:
-			MaskedIndex( ByteVolume* mask );
-			MaskedIndex( ByteVolume* mask, Vec3ui patchSize, DimensionSelection::PreferredDirection preferredDirection, int unprojectedSize);
-			virtual ~MaskedIndex();
+	public:
+		MaskedIndex( libmmv::ByteVolume* mask );
+		MaskedIndex( libmmv::ByteVolume* mask, libmmv::Vec3ui patchSize, DimensionSelection::PreferredDirection preferredDirection, int unprojectedSize);
+		virtual ~MaskedIndex();
 
-			void initMaskAccess();
+		void initMaskAccess();
 
-			virtual int rateQualityOfIndexForQuery( Vec3i targetPatchCenter ) override;
-			virtual Vec3i MaskedIndex::adjustTargetPatchPosition( Vec3i targetPatchCenter ) override;
+		virtual int rateQualityOfIndexForQuery( libmmv::Vec3i targetPatchCenter ) override;
+		virtual libmmv::Vec3i adjustTargetPatchPosition( libmmv::Vec3i targetPatchCenter ) override;
 
-			virtual std::tuple<Vec3i, float> query(Vec3i targetPatchCenter ) override;
-			virtual std::string to_string() override;
+		virtual std::tuple<libmmv::Vec3i, float> query(libmmv::Vec3i targetPatchCenter ) override;
+		virtual std::string to_string() override;
 			
-			// public for testing
-			std::vector<unsigned int>& getPermutation();
+		// public for testing
+		std::vector<unsigned int>& getPermutation();
 
-		protected:
-			bool patchEntirelyInVolume( Vec3i targetPatchCenter );
+	protected:
+		bool patchEntirelyInVolume(libmmv::Vec3i targetPatchCenter );
 
-		protected:
-			BytePatchAccess8Bit* maskAccess;
-			std::vector<unsigned int> permutation;
-			DimensionSelection::PreferredDirection preferredDirection;
-			ByteVolume* mask;
-			Vec3ui patchSize;
-		};
-    }
+	protected:
+		BytePatchAccess8Bit* maskAccess;
+		std::vector<unsigned int> permutation;
+		DimensionSelection::PreferredDirection preferredDirection;
+		libmmv::ByteVolume* mask;
+		libmmv::Vec3ui patchSize;
+	};
 }

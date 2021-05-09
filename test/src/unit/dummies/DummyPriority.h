@@ -2,26 +2,25 @@
 
 #include "computeorder/ComputeOrder.h"
 
-namespace ettention
+namespace libmmv 
 {
-    class Framework;
     class ByteVolume;
+}
 
-    namespace inpainting
+namespace inpainting
+{
+    class ComputeFront;
+    class Confidence;
+    class DataTerm;
+
+    class DummyPriority : public inpainting::ComputeOrder
     {
-        class ComputeFront;
-        class Confidence;
-        class DataTerm;
+    public:
+        DummyPriority(libmmv::ByteVolume* mask );
+        virtual ~DummyPriority();
+        virtual libmmv::Vec3ui selectCenterOfPatchToProcess( bool pop );
+        virtual float computePriorityForVoxel(libmmv::Vec3ui coordinate);
+		virtual void setIndex(Index* index);
+    };
 
-        class DummyPriority : public ettention::inpainting::ComputeOrder
-        {
-        public:
-            DummyPriority( ByteVolume* mask );
-            virtual ~DummyPriority();
-            virtual Vec3ui selectCenterOfPatchToProcess( bool pop );
-            virtual float computePriorityForVoxel(Vec3ui coordinate);
-			virtual void setIndex(Index* index);
-        };
-
-    } // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

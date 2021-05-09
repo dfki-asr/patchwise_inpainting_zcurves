@@ -12,11 +12,12 @@
 #include "InpaintingOperator.h"
 #include "Problem.h"
 
-#include "io/deserializer/VolumeDeserializer.h"
-#include "io/serializer/VolumeSerializer.h"
+#include "libmmv/io/deserializer/VolumeDeserializer.h"
+#include "libmmv/io/serializer/VolumeSerializer.h"
+#include "libmmv/evaluation/StackComparator.h"
+
 #include "setup/parameterset/OutputParameterSet.h"
 #include "setup/IndexOptions.h"
-#include "evaluation/StackComparator.h"
 
 #include "patchselection/CurveBasedPatchSelection.h"
 #include "dummies/DummyPatchSelection.h"
@@ -29,8 +30,7 @@
 
 #include "costfunction/LPDistance.h"
 
-using namespace ettention;
-using namespace ettention::inpainting;
+using namespace inpainting;
 
 class UpdateStepTest: public InpaintingTest
 {
@@ -55,8 +55,8 @@ TEST_F(UpdateStepTest, Data_And_Mask_Update)
 
     loadVolumes( );
 
-    Vec3ui centerOfSourcePatch = Vec3ui(1, 1, 1) + (problem->patchSize / 2);
-    Vec3ui centerOfPatchToInpaint = Vec3ui(10, 10, 10);
+    libmmv::Vec3ui centerOfSourcePatch = libmmv::Vec3ui(1, 1, 1) + (problem->patchSize / 2);
+    libmmv::Vec3ui centerOfPatchToInpaint = libmmv::Vec3ui(10, 10, 10);
 
     DummyPriority priority( problem->mask );
     DummyPatchSelection selection;
@@ -72,8 +72,8 @@ TEST_F(UpdateStepTest, Data_And_Mask_Update)
 
     delete inpainting;
 
-    StackComparator::assertVolumesAreEqual(updatedMaskFile, referenceMaskFile);
-    StackComparator::assertVolumesAreEqual(updatedDataFile, referenceDataFile);
+    libmmv::StackComparator::assertVolumesAreEqual(updatedMaskFile, referenceMaskFile);
+    libmmv::StackComparator::assertVolumesAreEqual(updatedDataFile, referenceDataFile);
 }
 
 TEST_F(UpdateStepTest, Update_With_Manually_Selected_Patch)
@@ -90,7 +90,7 @@ TEST_F(UpdateStepTest, Update_With_Manually_Selected_Patch)
 
     InpaintingTest::loadVolumes(dataFile, maskFile, dictionaryFile);
 
-    Vec3ui centerOfPatchToInpaint = Vec3ui(16, 4, 25);
+    libmmv::Vec3ui centerOfPatchToInpaint = libmmv::Vec3ui(16, 4, 25);
 
     DummyPriority priority( problem->mask );
     DummyPatchSelection selection;
@@ -98,7 +98,7 @@ TEST_F(UpdateStepTest, Update_With_Manually_Selected_Patch)
     InpaintingOptimizationParameters optimizationParameters;
 
     InpaintingOperator* inpainting = new InpaintingOperator(problem, &priority, &selection, &progress, false, &debugParameters, &optimizationParameters);
-    inpainting->setCenterOfSourcePatch(Vec3ui(12,17,2));
+    inpainting->setCenterOfSourcePatch(libmmv::Vec3ui(12,17,2));
     inpainting->updateDataAndMask(centerOfPatchToInpaint);
 
     writeOutVolume(problem->data, updatedDataFile);
@@ -106,8 +106,8 @@ TEST_F(UpdateStepTest, Update_With_Manually_Selected_Patch)
 
     delete inpainting;
 
-    StackComparator::assertVolumesAreEqual(updatedDataFile, updatedDataReferenceFile);
-    StackComparator::assertVolumesAreEqual(updatedMaskFile, updatedMaskReferenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(updatedDataFile, updatedDataReferenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(updatedMaskFile, updatedMaskReferenceFile);
 }
 
 TEST_F(UpdateStepTest, Front_Progression)
@@ -120,12 +120,12 @@ TEST_F(UpdateStepTest, Front_Progression)
 
     loadVolumes();
 
-    Vec3ui centerOfPatchToInpaint = Vec3ui(4, 3, 5);
+    libmmv::Vec3ui centerOfPatchToInpaint = libmmv::Vec3ui(4, 3, 5);
 
     CriminisiOrder* priority = new CriminisiOrder( problem, &progress);
 	priority->init();
 
-    Volume* originalFrontVolume = priority->plotComputeFrontToVolume();
+    libmmv::Volume* originalFrontVolume = priority->plotComputeFrontToVolume();
     writeOutVolume(originalFrontVolume, originalFrontFile);
     delete originalFrontVolume;
 
@@ -145,12 +145,12 @@ TEST_F(UpdateStepTest, Front_Progression)
     CurveBasedPatchSelection selection(costFunction, problem->data, problem->mask, problem->dictionaryVolume, dictionaryPatches, problem->patchSize, &debugParameters, &optimizationParameters, &indexOptions, &costFunctionOptions, true, &progress);
     InpaintingOperator* inpainting = new InpaintingOperator( problem, priority, &selection, &progress, false, &debugParameters, &optimizationParameters );
 
-    Vec3ui centerOfSourcePatch = selection.selectCenterOfBestPatch(centerOfPatchToInpaint);
+    libmmv::Vec3ui centerOfSourcePatch = selection.selectCenterOfBestPatch(centerOfPatchToInpaint);
 	inpainting->setCenterOfSourcePatch( centerOfSourcePatch );
     inpainting->updateDataAndMask( centerOfPatchToInpaint );
     inpainting->updatePriority( centerOfPatchToInpaint );
 
-    Volume* frontVolume = priority->plotComputeFrontToVolume();
+    libmmv::Volume* frontVolume = priority->plotComputeFrontToVolume();
     writeOutVolume(frontVolume, updatedFrontFile);
     delete frontVolume;
 
@@ -158,6 +158,6 @@ TEST_F(UpdateStepTest, Front_Progression)
     delete priority;
     delete inpainting;
 
-    StackComparator::assertVolumesAreEqual(originalFrontFile, referenceBeforeUpdate);
-    StackComparator::assertVolumesAreEqual(updatedFrontFile, referenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(originalFrontFile, referenceBeforeUpdate);
+    libmmv::StackComparator::assertVolumesAreEqual(updatedFrontFile, referenceFile);
 }

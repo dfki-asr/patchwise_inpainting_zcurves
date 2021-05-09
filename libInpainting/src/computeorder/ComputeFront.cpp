@@ -2,10 +2,8 @@
 
 #include "ComputeFront.h"
 
-#include "model/volume/FloatVolume.h"
+#include "libmmv/model/volume/FloatVolume.h"
 
-namespace ettention
-{
 	namespace inpainting
 	{
 
@@ -26,13 +24,13 @@ namespace ettention
 			return entryByCoordinate.size();
 		}
 
-		void ComputeFront::updatePriority(Vec3ui coordinate, float newPriority)
+		void ComputeFront::updatePriority(libmmv::Vec3ui coordinate, float newPriority)
 		{
 			removeEntry( coordinate );
 			addEntry( coordinate, newPriority );
 		}
 
-		void ComputeFront::addEntry(Vec3ui coordinate, float priority)
+		void ComputeFront::addEntry(libmmv::Vec3ui coordinate, float priority)
 		{
 			count();
 			ComputeFrontEntry entry = ComputeFrontEntry(coordinate, priority);
@@ -41,7 +39,7 @@ namespace ettention
 			count();
 		}
 
-		void ComputeFront::removeEntry(Vec3ui coordinate)
+		void ComputeFront::removeEntry(libmmv::Vec3ui coordinate)
 		{
 			auto it = entryByCoordinate.find(ComputeFrontEntry(coordinate, 0.0));
 			if (it == entryByCoordinate.end())
@@ -66,7 +64,7 @@ namespace ettention
 			return entry;
 		}
 
-		ettention::inpainting::ComputeFrontEntry ComputeFront::peekEntryWithHighestPriority()
+		ComputeFrontEntry ComputeFront::peekEntryWithHighestPriority()
 		{
 			if (count() == 0)
 				throw std::runtime_error("ComputeFront is empty, cannot pop");
@@ -76,7 +74,7 @@ namespace ettention
 			return *it;
 		}
 
-		bool  ComputeFront::contains(Vec3ui coordinate)
+		bool  ComputeFront::contains(libmmv::Vec3ui coordinate)
 		{
 			return entryByCoordinate.find(ComputeFrontEntry(coordinate, 0.0)) != entryByCoordinate.end();
 		}
@@ -105,16 +103,15 @@ namespace ettention
 			return entryByCoordinate.end();
 		}
 
-		Volume* ComputeFront::plotToVolume(Vec3ui volumeResolution)
+		libmmv::Volume* ComputeFront::plotToVolume(libmmv::Vec3ui volumeResolution)
 		{
-			Volume* volume = new FloatVolume( volumeResolution, 0.0f );
+			libmmv::Volume* volume = new libmmv::FloatVolume( volumeResolution, 0.0f );
 			for (auto it = entryByCoordinate.begin(); it != entryByCoordinate.end(); ++it)
 			{
-				const Vec3ui coord = it->coordinate;
+				const libmmv::Vec3ui coord = it->coordinate;
 				volume->setVoxelToValue(coord, 255.0f);
 			}
 			return volume;
 		}
 
 	} // namespace inpainting
-} // namespace ettention

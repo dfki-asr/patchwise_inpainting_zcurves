@@ -1,84 +1,80 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 #include "IndexInterval.h"
 
-namespace ettention
-{
-    namespace inpainting {
+namespace inpainting {
 
-
-		class StepReport
+	class StepReport
+	{
+	public:
+		enum Decision
 		{
-		public:
-			enum Decision
-			{
-				EMPTY, TEST_INSIDE, VISIT_LEFT, VISIT_RIGHT, VISIT_LEFT_RIGHT, VISIT_RIGHT_LEFT
-			};
-
-			StepReport();
-			~StepReport();
-
-			void outputTextReport(std::ofstream& ofs);
-
-			int depth;
-			Decision decision;
-			IndexInterval datasetInterval;
-			float distanceToFarBox;
-			float bestDistanceAtDecision;
-			int samplesExcluded;
-			int searchSteps;
-			std::vector<StepReport*> child;
+			EMPTY, TEST_INSIDE, VISIT_LEFT, VISIT_RIGHT, VISIT_LEFT_RIGHT, VISIT_RIGHT_LEFT
 		};
 
-		class QueryReport
-		{
-		public:
-			QueryReport();
-			~QueryReport();
+		StepReport();
+		~StepReport();
 
-			void addStep( StepReport* step );
+		void outputTextReport(std::ofstream& ofs);
 
-			int totalStepsTaken();
-			int maxDepthReached();
-			int totalPointsExcluded();
-			int totalPointsTested();
+		int depth;
+		Decision decision;
+		IndexInterval datasetInterval;
+		float distanceToFarBox;
+		float bestDistanceAtDecision;
+		int samplesExcluded;
+		int searchSteps;
+		std::vector<StepReport*> child;
+	};
 
-			void outputTextReport(std::ofstream& ofs, bool logStepWise );
+	class QueryReport
+	{
+	public:
+		QueryReport();
+		~QueryReport();
 
-			std::vector<StepReport*> steps;
+		void addStep( StepReport* step );
 
-			Vec3ui targetPatchUpperLeft;
-			Vec3ui bestPatchUpperLeft;
-			float normOfSelectedPatch;
+		int totalStepsTaken();
+		int maxDepthReached();
+		int totalPointsExcluded();
+		int totalPointsTested();
 
-			int numberOfSamplesExcluded;
-			int numberOfSamplesTested;
-			int numberOfTraversalSteps;
+		void outputTextReport(std::ofstream& ofs, bool logStepWise );
 
-			std::mutex stepMutex;
-		};
+		std::vector<StepReport*> steps;
 
-		class TraversalReport
-		{
-		public:
-			TraversalReport( std::string filename, bool logStepWise );
-			~TraversalReport();
+		libmmv::Vec3ui targetPatchUpperLeft;
+		libmmv::Vec3ui bestPatchUpperLeft;
+		float normOfSelectedPatch;
 
-			void startQuery();
-			QueryReport& currentQuery();
+		int numberOfSamplesExcluded;
+		int numberOfSamplesTested;
+		int numberOfTraversalSteps;
 
-			void outputTextReport(std::ofstream& ofs);
-			void outputTextReport();
+		std::mutex stepMutex;
+	};
 
-			bool shoudLogStepWise();
+	class TraversalReport
+	{
+	public:
+		TraversalReport( std::string filename, bool logStepWise );
+		~TraversalReport();
 
-			std::vector<QueryReport*> queries;
+		void startQuery();
+		QueryReport& currentQuery();
 
-		protected:
-			std::string filename;
-			bool logStepWise;
-		};
+		void outputTextReport(std::ofstream& ofs);
+		void outputTextReport();
 
-    }
+		bool shoudLogStepWise();
+
+		std::vector<QueryReport*> queries;
+
+	protected:
+		std::string filename;
+		bool logStepWise;
+	};
+
 }

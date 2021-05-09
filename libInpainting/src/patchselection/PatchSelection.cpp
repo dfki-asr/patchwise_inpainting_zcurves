@@ -2,35 +2,32 @@
 
 #include "PatchSelection.h"
 
-namespace ettention
+namespace inpainting
 {
-    namespace inpainting
+
+    PatchSelection::PatchSelection(libmmv::ByteVolume* dataVolume, libmmv::ByteVolume* maskVolume, libmmv::ByteVolume* dictionaryVolume)
+        : dataVolume(dataVolume), maskVolume(maskVolume), dictionaryVolume(dictionaryVolume)
     {
+    }
 
-        PatchSelection::PatchSelection(ByteVolume* dataVolume, ByteVolume* maskVolume, ByteVolume* dictionaryVolume)
-            : dataVolume(dataVolume), maskVolume(maskVolume), dictionaryVolume(dictionaryVolume)
-        {
-        }
+    PatchSelection::~PatchSelection()
+    {
+    }
 
-        PatchSelection::~PatchSelection()
-        {
-        }
+	void PatchSelection::activateBruteForceFallback()
+	{
+		/* to be implemented if needed */
+	}
 
-		void PatchSelection::activateBruteForceFallback()
-		{
-			/* to be implemented if needed */
-		}
+	void PatchSelection::computeCostAfterIteration()
+	{
+		/* to be implemented if needed */
+	}
 
-		void PatchSelection::computeCostAfterIteration()
-		{
-			/* to be implemented if needed */
-		}
+	bool PatchSelection::initializeNewIteration()
+	{
+		/* to be implemented if needed */
+		return false;
+	}
 
-		bool PatchSelection::initializeNewIteration()
-		{
-			/* to be implemented if needed */
-			return false;
-		}
-
-	} // namespace
 } // namespace

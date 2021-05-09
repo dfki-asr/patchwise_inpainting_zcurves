@@ -2,18 +2,15 @@
 
 #include "Serializable.h"
 
-namespace ettention
+namespace inpainting
 {
-	namespace inpainting
+	Serializable::Serializable()
 	{
-		Serializable::Serializable()
-		{
 
-		}
+	}
 
-		Serializable::~Serializable()
-		{
+	Serializable::~Serializable()
+	{
 
-		}
 	}
 }

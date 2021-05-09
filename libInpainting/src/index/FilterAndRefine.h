@@ -5,35 +5,32 @@
 
 class IDistance;
 
-namespace ettention
-{
-	class ByteVolume;
+class ByteVolume;
 	
-	namespace inpainting 
+namespace inpainting 
+{
+
+	class FilterAndRefine 
 	{
+	public:
+		virtual std::tuple<libmmv::Vec3i, float> selectBestPatch(libmmv::Vec3i targetCoordinate, std::vector<int> knn) = 0;
+	};
 
-		class FilterAndRefine 
-		{
-		public:
-			virtual std::tuple<ettention::Vec3i, float> selectBestPatch(Vec3i targetCoordinate, std::vector<int> knn) = 0;
-		};
+	template<class NORM>
+	class FilterAndRefineImpl : public FilterAndRefine
+	{
+	public:
+		FilterAndRefineImpl(libmmv::ByteVolume* data, libmmv::ByteVolume* mask, libmmv::ByteVolume* dictionary );
+		FilterAndRefineImpl(libmmv::ByteVolume* data, libmmv::ByteVolume* mask, libmmv::ByteVolume* dictionary, libmmv::Vec3ui patchSize);
+		virtual ~FilterAndRefineImpl();
 
-		template<class NORM>
-		class FilterAndRefineImpl : public FilterAndRefine
-		{
-		public:
-			FilterAndRefineImpl(ByteVolume* data, ByteVolume* mask, ByteVolume* dictionary );
-			FilterAndRefineImpl(ByteVolume* data, ByteVolume* mask, ByteVolume* dictionary, Vec3ui patchSize);
-			virtual ~FilterAndRefineImpl();
+		virtual std::tuple<libmmv::Vec3i, float> selectBestPatch(libmmv::Vec3i targetCoordinate, std::vector<int> knn) override;
 
-			virtual std::tuple<ettention::Vec3i, float> selectBestPatch( Vec3i targetCoordinate, std::vector<int> knn) override;
+	protected:
+		libmmv::ByteVolume* data;
+		libmmv::ByteVolume* mask;
+		libmmv::ByteVolume* dictionary;
+		libmmv::Vec3ui patchSize;
+	};
 
-		protected:
-			ByteVolume* data;
-			ByteVolume* mask;
-			ByteVolume* dictionary;
-			Vec3ui patchSize;
-		};
-
-	}
 }

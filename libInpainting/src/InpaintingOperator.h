@@ -1,70 +1,70 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention
+namespace libmmv
 {
     class FloatVolume;
+}
 
-    namespace inpainting 
+namespace inpainting 
+{
+    class PatchSelection;
+    class ComputeOrder;
+    class ProgressReporter;
+    class Problem;
+    class InpaintingDebugParameters;
+    class InpaintingOptimizationParameters;
+
+    class InpaintingOperator
     {
-        class PatchSelection;
-        class ComputeOrder;
-        class ProgressReporter;
-        class Problem;
-        class InpaintingDebugParameters;
-        class InpaintingOptimizationParameters;
+    public:
+        InpaintingOperator( Problem* problem, ComputeOrder* priority, PatchSelection* patchSelection, ProgressReporter* progress, bool shouldUseBlendOperation, InpaintingDebugParameters* debugParameters, InpaintingOptimizationParameters* optimizationParameters );
+        virtual ~InpaintingOperator();
 
-        class InpaintingOperator
-        {
-        public:
-            InpaintingOperator( Problem* problem, ComputeOrder* priority, PatchSelection* patchSelection, ProgressReporter* progress, bool shouldUseBlendOperation, InpaintingDebugParameters* debugParameters, InpaintingOptimizationParameters* optimizationParameters );
-            virtual ~InpaintingOperator();
+        void run();
 
-            void run();
+        libmmv::FloatVolume* getErrorVolume();
 
-            FloatVolume* getErrorVolume();
+    public: // the following functions are public for testing purpose
+        virtual void runOneIteration();
 
-        public: // the following functions are public for testing purpose
-            virtual void runOneIteration();
+        virtual void inpaintPatch();
+        virtual void updateDataAndMask(libmmv::Vec3ui centerOfPatchToInpaint);
+        virtual void updateDataAndMaskOfOneVoxel(libmmv::Vec3ui coord);
+        virtual void updatePriority(libmmv::Vec3ui centerOfPatchToInpaint);
+        virtual float calculateTargetValue(libmmv::Vec3ui coord);
 
-            virtual void inpaintPatch();
-            virtual void updateDataAndMask(Vec3ui centerOfPatchToInpaint);
-            virtual void updateDataAndMaskOfOneVoxel(Vec3ui coord);
-            virtual void updatePriority(Vec3ui centerOfPatchToInpaint);
-            virtual float calculateTargetValue(Vec3ui coord);
+        ComputeOrder* getPriority();
+        PatchSelection* getPatchSelection();
 
-            ComputeOrder* getPriority();
-            PatchSelection* getPatchSelection();
+        libmmv::Vec3ui getCenterOfLastInpaintedPatch();
+        libmmv::Vec3ui getCenterOfLastSourcePatch();
 
-            Vec3ui getCenterOfLastInpaintedPatch();
-            Vec3ui getCenterOfLastSourcePatch();
+        void setCenterOfSourcePatch(libmmv::Vec3i value);
 
-            void setCenterOfSourcePatch(Vec3i value);
+    protected:
+        void outputDebugVolumesIfRequired();
+        void outputDebugVolumes();
 
-        protected:
-            void outputDebugVolumesIfRequired();
-            void outputDebugVolumes();
+    protected:
+        Problem* problem;
+        ProgressReporter* progress;
+        ComputeOrder* priority;
+        ComputeOrder* fillfront;
+        PatchSelection* patchSelection;
+        libmmv::FloatVolume* error;
+        libmmv::Vec3i centerOfPatchToInpaint;
+        libmmv::Vec3i centerOfSourcePatch;
+        unsigned int iterationNumber;
+        bool shouldUseBlendOperation;
+        unsigned int voxelsUpdated;
+        libmmv::Vec3i targetPatchUpperLeft;
 
-        protected:
-            Problem* problem;
-            ProgressReporter* progress;
-            ComputeOrder* priority;
-            ComputeOrder* fillfront;
-            PatchSelection* patchSelection;
-            FloatVolume* error;
-            Vec3i centerOfPatchToInpaint;
-            Vec3i centerOfSourcePatch;
-            unsigned int iterationNumber;
-            bool shouldUseBlendOperation;
-            unsigned int voxelsUpdated;
-            Vec3i targetPatchUpperLeft;
+        InpaintingDebugParameters* debugParameters;
+        InpaintingOptimizationParameters* optimizationParameters;
 
-            InpaintingDebugParameters* debugParameters;
-            InpaintingOptimizationParameters* optimizationParameters;
+		std::vector<libmmv::Vec3i> selectedCoordinatesByCriminisi;
+    };
 
-			std::vector<Vec3i> selectedCoordinatesByCriminisi;
-        };
-
-    } // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

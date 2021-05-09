@@ -2,25 +2,24 @@
 
 #include "patchselection/PatchSelection.h"
 
-namespace ettention
+namespace libmmv 
 {
-    class Framework;
     class Volume;
-    class GPUMappedVolume;
+}
 
-    namespace inpainting
+namespace inpainting
+{
+    class ComputeFront;
+    class Confidence;
+    class DataTerm;
+
+    class DummyPatchSelection : public PatchSelection
     {
-        class ComputeFront;
-        class Confidence;
-        class DataTerm;
+    public:
+        DummyPatchSelection();
+        virtual libmmv::Vec3i selectCenterOfBestPatch(libmmv::Vec3i sourcePosition);
+		virtual libmmv::Vec3i adjustTargetPatchPosition(libmmv::Vec3i targetPatchCenter) override;
+    };
 
-        class DummyPatchSelection : public PatchSelection
-        {
-        public:
-            DummyPatchSelection();
-            virtual Vec3i selectCenterOfBestPatch(Vec3i sourcePosition);
-			virtual Vec3i adjustTargetPatchPosition(Vec3i targetPatchCenter) override;
-        };
+} // namespace inpainting
 
-    } // namespace inpainting
-} // namespace ettention

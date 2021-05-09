@@ -2,21 +2,19 @@
 
 #include <vector>
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention
+namespace libmmv {
+	class ByteVolume;
+}
+
+namespace inpainting 
 {
-    class ByteVolume;
-
-	namespace inpainting 
+	class DictionaryDebugOutput
 	{
-		class DictionaryDebugOutput
-		{
-		public: 
-            static void writeDebugVolume( ByteVolume* dictionaryVolume, Vec3ui patchSize, std::string filename, std::vector<unsigned int> positions );
-            static ByteVolume* extractDictionaryToVolume(ByteVolume* dictionaryVolume, Vec3ui patchSize, std::vector<unsigned int> patches );
-		};
+	public: 
+        static void writeDebugVolume(libmmv::ByteVolume* dictionaryVolume, libmmv::Vec3ui patchSize, std::string filename, std::vector<unsigned int> positions );
+        static libmmv::ByteVolume* extractDictionaryToVolume(libmmv::ByteVolume* dictionaryVolume, libmmv::Vec3ui patchSize, std::vector<unsigned int> patches );
+	};
 
-
-	} // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

@@ -2,12 +2,16 @@
 
 #include <gtest/gtest.h>
 
-#include "model/volume/Volume.h"
+#include "libmmv/model/volume/Volume.h"
 
-namespace ettention
+namespace ettention 
 {
     class MemoryListener;
+}
 
+namespace inpainting
+{
+    
     class TestBase : public ::testing::Test
     {
     public:
@@ -20,7 +24,7 @@ namespace ettention
 
         // virtual std::string runTestReconstruction(const std::string xmlFile);
 
-        void writeOutVolume(const std::string &filename, Volume* volume, CoordinateOrder order = ORDER_XZY);
+        void writeOutVolume(const std::string &filename, libmmv::Volume* volume, libmmv::CoordinateOrder order = libmmv::ORDER_XZY);
 
     protected:
         std::string pathToData;
@@ -29,7 +33,7 @@ namespace ettention
 
     private:
         unsigned int beginState;
-        MemoryListener* listener;
+        ettention::MemoryListener* listener;
         bool setUpCalled;
         bool tearDownCalled;
     };

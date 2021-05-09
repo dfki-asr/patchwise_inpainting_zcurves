@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.19)
 
 INCLUDE(CommonFlags)
 
@@ -13,9 +13,8 @@ foreach(TEST_SOURCE_DIR ${TEST_SOURCE_DIRS})
 endforeach()
 generate_source_tree(HOST_SOURCES "${ALL_LIST_DIRS}" "${FILE_TYPES}")
 
-# set include directories
 include_directories("${INPAINTING_DEPENDENCIES_ROOT}"
-					"${FREEIMAGE_INCLUDE_DIR}"
+					"${FREEIMAGEPLUS_INCLUDE_PATH}"
 					"${MKL_INCLUDE_DIR}"
 					"${DAAL_INCLUDE_DIR}"
                     "${RAPID_XML_INCLUDE_DIR}"
@@ -34,13 +33,20 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} 
                       ${MKL_LIBRARIES}
                       ${DAAL_LIBRARIES}
-                      libMMV
+                      libmmv
                       libCFG
                       libThreadPool
                       libInpainting
+					  gtest
+					  MemoryManager
 )
 
-add_precompiled_header(${PROJECT_NAME} stdafx.h)
+if(CMAKE_COMPILER_IS_GNUCC)
+	target_link_options(${PROJECT_NAME} PRIVATE ${MKL_LINKER_OPTIONS})
+	target_link_directories(${PROJECT_NAME} PRIVATE ${MKL_ROOT_DIR}/lib/intel64/ ${TBB_LIB_DIR} ${DAAL_LIB_DIR})
+endif(CMAKE_COMPILER_IS_GNUCC)
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE "${LIBINPAINTING_INCLUDE_DIR}/stdafx.h")
 
 CopyDlls()
 CopyInpaintingDlls()

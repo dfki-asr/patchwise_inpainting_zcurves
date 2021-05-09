@@ -4,7 +4,7 @@
 
 #include "setup/parametersource/ParameterSource.h"
 
-namespace ettention
+namespace inpainting
 {
     InpaintingParameterSet::InpaintingParameterSet()
     {
@@ -31,7 +31,7 @@ namespace ettention
         printTraversalInformation = false;
     }
 
-    void InpaintingParameterSet::initializeParameters(ParameterSource* parameterSource)
+    void InpaintingParameterSet::initializeParameters(cfg::ParameterSource* parameterSource)
     {
         patchSize = parameterSource->getVec3uiParameter("patchSize");
         sparseFileName = parameterSource->getPathParameter("sparseFile");
@@ -77,7 +77,7 @@ namespace ettention
 
         if (parameterSource->parameterExists("costWeight"))
         {
-            costWeight = parameterSource->getVecFloatParameter("costWeight");
+            costWeight = parameterSource->getFloatVecParameter("costWeight");
         }
 
         if( parameterSource->parameterExists("maximumNumberOfReturnedIntervalsPerTraversal") )

@@ -2,33 +2,32 @@
 
 #include "setup/parameterset/ParameterSet.h"
 
-namespace ettention
-{
+namespace cfg {
 	class ParameterSource;
+}
 
-	namespace inpainting 
+namespace inpainting 
+{
+	class CostFunctionOptions : public cfg::ParameterSet 
 	{
-		class CostFunctionOptions : public ParameterSet 
+	public:
+		enum class CostFunctionType
 		{
-		public:
-			enum class CostFunctionType
-			{
-				L1,
-				L2,
-				L2WithWeight,
-			};
-
-			CostFunctionOptions();
-			CostFunctionOptions(const ParameterSource* parameterSource);
-			virtual ~CostFunctionOptions();
-
-			CostFunctionType getCostFunctionType();
-
-		protected:
-			CostFunctionType parseCostFunctionType( std::string value );
-
-		public:
-			CostFunctionType costFunctionType;
+			L1,
+			L2,
+			L2WithWeight,
 		};
-    }
+
+		CostFunctionOptions();
+		CostFunctionOptions(const cfg::ParameterSource* parameterSource);
+		virtual ~CostFunctionOptions();
+
+		CostFunctionType getCostFunctionType();
+
+	protected:
+		CostFunctionType parseCostFunctionType( std::string value );
+
+	public:
+		CostFunctionType costFunctionType;
+	};
 }

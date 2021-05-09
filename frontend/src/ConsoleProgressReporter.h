@@ -6,36 +6,33 @@
 
 #include "ProgressReporter.h"
 
-namespace ettention
+namespace inpainting 
 {
-    namespace inpainting 
+    class ConsoleProgressReporter : public ProgressReporter
     {
-        class ConsoleProgressReporter : public ProgressReporter
-        {
-        public: 
-            ConsoleProgressReporter( float stepsize = 1.0f );
-            virtual ~ConsoleProgressReporter();
+    public: 
+        ConsoleProgressReporter( float stepsize = 1.0f );
+        virtual ~ConsoleProgressReporter();
 
-            virtual void reportTaskStart(std::string task, float totalProgress);
-            virtual void reportTaskEnd() override;
+        virtual void reportTaskStart(std::string task, float totalProgress);
+        virtual void reportTaskEnd() override;
 
-            void setStepSize( float newStepSize );
+        void setStepSize( float newStepSize );
 
-        protected:
-            void handleProgressReport() override;
-            std::string estimatedDurationAsString();
-            void convertTime(std::ostringstream &stream, int time);
-            void setConsoleTitle(std::string title);
+    protected:
+        void handleProgressReport() override;
+        std::string estimatedDurationAsString();
+        void convertTime(std::ostringstream &stream, int time);
+        void setConsoleTitle(std::string title);
 
-        protected:
-            std::mutex mutex;
-            float stepSize;
-            float lastReportedProgress;
+    protected:
+        std::mutex mutex;
+        float stepSize;
+        float lastReportedProgress;
 
-            Timer currentTime;
-            float progress;
-        };
+        Timer currentTime;
+        float progress;
+    };
 
 
-    } // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

@@ -2,21 +2,18 @@
 
 #include "ComputeFrontEntry.h"
 
-namespace ettention
+namespace inpainting
 {
-	namespace inpainting
+
+	ComputeFrontEntry::ComputeFrontEntry(libmmv::Vec3ui coordinate, float priority)
+		: priority(priority)
+		, coordinate(coordinate)
 	{
 
-		ComputeFrontEntry::ComputeFrontEntry(Vec3ui coordinate, float priority)
-			: priority(priority)
-			, coordinate(coordinate)
-		{
+	}
 
-		}
+	ComputeFrontEntry::~ComputeFrontEntry()
+	{
+	}
 
-		ComputeFrontEntry::~ComputeFrontEntry()
-		{
-		}
-
-	} // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

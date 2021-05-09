@@ -4,27 +4,27 @@
 
 #include "InpaintingTest.h"
 #include "common/TestBase.h"
-#include "model/volume/Volume.h"
-#include "model/volume/ByteVolume.h"
+
+#include "libmmv/model/volume/Volume.h"
+#include "libmmv/model/volume/ByteVolume.h"
+#include "libmmv/io/deserializer/VolumeDeserializer.h"
+#include "libmmv/evaluation/StackComparator.h"
 
 #include "dictionary/FullDictionaryBuilder.h"
 #include "dictionary/Dictionary.h"
 
-#include "io/deserializer/VolumeDeserializer.h"
 #include "setup/parameterset/OutputParameterSet.h"
-#include "evaluation/StackComparator.h"
 
 #include "Problem.h"
 
-using namespace ettention;
-using namespace ettention::inpainting;
+using namespace inpainting;
 
 void InpaintingTest::SetUp() 
 {
     TestBase::SetUp();
 
     problem = new Problem();
-    problem->patchSize = Vec3ui(7, 7, 3);
+    problem->patchSize = libmmv::Vec3ui(7, 7, 3);
 
     problem->mask = nullptr;
     problem->data = nullptr;
@@ -39,10 +39,10 @@ void InpaintingTest::TearDown()
     TestBase::TearDown();
 }
 
-void InpaintingTest::writeOutVolume(Volume* volume, std::string filename)
+void InpaintingTest::writeOutVolume(libmmv::Volume* volume, std::string filename)
 {
-    OutputParameterSet parameter( VoxelValueType::IO_VOXEL_TYPE_UNSIGNED_8 );
-    VolumeSerializer serializer;
+    cfg::OutputParameterSet parameter(libmmv::VoxelValueType::IO_VOXEL_TYPE_UNSIGNED_8 );
+    libmmv::VolumeSerializer serializer;
     serializer.write(volume, filename, parameter.getVoxelType(), parameter.getOrientation() );
 }
 
@@ -52,15 +52,15 @@ void InpaintingTest::loadVolumes(std::string data, std::string mask, std::string
     std::string dataFile = std::string(TESTDATA_DIR) + data;
     std::string dictionaryFile = std::string(TESTDATA_DIR) + dictionary;
 
-    problem->mask = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(maskFile, Voxel::DataType::UCHAR_8));
-    problem->data = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(dataFile, Voxel::DataType::UCHAR_8));
-    problem->dictionaryVolume = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(dictionaryFile, Voxel::DataType::UCHAR_8));
+    problem->mask = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(maskFile, libmmv::Voxel::DataType::UCHAR_8));
+    problem->data = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(dataFile, libmmv::Voxel::DataType::UCHAR_8));
+    problem->dictionaryVolume = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(dictionaryFile, libmmv::Voxel::DataType::UCHAR_8));
 }
 
 void InpaintingTest::loadDense(std::string dense)
 {
     std::string denseFile = std::string(TESTDATA_DIR) + dense;
-    problem->denseScan = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(denseFile, Voxel::DataType::UCHAR_8));
+    problem->denseScan = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(denseFile, libmmv::Voxel::DataType::UCHAR_8));
 }
 
 void InpaintingTest::instantiateDictionary()
@@ -70,7 +70,7 @@ void InpaintingTest::instantiateDictionary()
     dictionary->compressDictionary();
 }
 
-void InpaintingTest::setPatchSize(Vec3ui patchSize)
+void InpaintingTest::setPatchSize(libmmv::Vec3ui patchSize)
 {
     problem->patchSize = patchSize;
 }

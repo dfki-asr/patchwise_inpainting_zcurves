@@ -3,12 +3,14 @@
 #include "gtest/gtest.h"
 
 #include "common/TestBase.h"
-#include "algorithm/Coordinates.h"
-#include "evaluation/DistanceBetweenConsecutiveSlabs.h"
-#include "evaluation/StackComparator.h"
+
+#include "libmmv/evaluation/DistanceBetweenConsecutiveSlabs.h"
+#include "libmmv/evaluation/StackComparator.h"
+#include "libmmv/io/serializer/VolumeSerializer.h"
+#include "libmmv/io/deserializer/VolumeDeserializer.h"
+#include "libmmv/algorithm/Coordinates.h"
+
 #include "setup/parameterset/OutputParameterSet.h"
-#include "io/serializer/VolumeSerializer.h"
-#include "io/deserializer/VolumeDeserializer.h"
 
 #include "ProgressReporter.h"
 #include "dictionary/FullDictionaryBuilder.h"
@@ -25,8 +27,7 @@
 #include "index/Index.h"
 #include "pca/IdentitySubspace.h"
 
-using namespace ettention;
-using namespace ettention::inpainting;
+using namespace inpainting;
 
 class ZCurveTest: public TestBase
 {
@@ -36,8 +37,8 @@ public:
         TestBase::SetUp();
         workDirectory = std::string(TESTDATA_DIR) + "/work/";
         dataDirectory = std::string(TESTDATA_DIR) + "/data/";        
-        volumeResolution = Vec3ui(7, 7, 3);
-        patchSize = Vec3ui(3, 3, 1);
+        volumeResolution = libmmv::Vec3ui(7, 7, 3);
+        patchSize = libmmv::Vec3ui(3, 3, 1);
     }
 
     void TearDown() override
@@ -45,11 +46,11 @@ public:
         TestBase::TearDown();
     }
 
-	ByteVolume* initVolume()
+    libmmv::ByteVolume* initVolume()
     {
-        auto volume = new ByteVolume(volumeResolution, 0.0f);
+        auto volume = new libmmv::ByteVolume(volumeResolution, 0.0f);
 
-        Vec3ui position(0, 0, 0);
+        libmmv::Vec3ui position(0, 0, 0);
         for (position.z = 0; position.z < volumeResolution.z; position.z++)
             for (position.y = 0; position.y < volumeResolution.y; position.y++)
                 for (position.x = 0; position.x < volumeResolution.x; position.x++)
@@ -60,9 +61,9 @@ public:
         return volume;
     }
 
-    ByteVolume* loadByteVolume(std::string filename)
+    libmmv::ByteVolume* loadByteVolume(std::string filename)
     {
-        auto volume = (ByteVolume*)VolumeDeserializer::load(filename, Voxel::DataType::UCHAR_8);
+        auto volume = (libmmv::ByteVolume*) libmmv::VolumeDeserializer::load(filename, libmmv::Voxel::DataType::UCHAR_8);
         volumeResolution = volume->getProperties().getVolumeResolution();
         return volume;
     }
@@ -70,7 +71,7 @@ public:
     std::vector<unsigned int> listPossiblePatchPositionsInVolume()
     {
         std::vector<unsigned int> result;
-        Vec3ui position(0, 0, 0);
+        libmmv::Vec3ui position(0, 0, 0);
         for (position.z = patchSize.z / 2; position.z < volumeResolution.z - patchSize.z / 2; position.z++)
             for (position.y = patchSize.y / 2; position.y < volumeResolution.y - patchSize.y / 2; position.y++)
                 for (position.x = patchSize.x / 2; position.x < volumeResolution.x - patchSize.x / 2; position.x++)
@@ -86,20 +87,20 @@ public:
         std::vector<unsigned int> result;
         for (unsigned int i = 0; i < 5; i++)
         {
-            result.push_back(Flatten3D(Vec3ui(2, 2, i), volumeResolution));
-            result.push_back(Flatten3D(Vec3ui(6, 2, i), volumeResolution));
-            result.push_back(Flatten3D(Vec3ui(10, 2, i), volumeResolution));
-            result.push_back(Flatten3D(Vec3ui(2, 6, i), volumeResolution));
-            result.push_back(Flatten3D(Vec3ui(6, 6, i), volumeResolution));
-            result.push_back(Flatten3D(Vec3ui(10, 6, i), volumeResolution));
-            result.push_back(Flatten3D(Vec3ui(2, 10, i), volumeResolution));
-            result.push_back(Flatten3D(Vec3ui(6, 10, i), volumeResolution));
-            result.push_back(Flatten3D(Vec3ui(10, 10, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(2, 2, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(6, 2, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(10, 2, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(2, 6, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(6, 6, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(10, 6, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(2, 10, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(6, 10, i), volumeResolution));
+            result.push_back(Flatten3D(libmmv::Vec3ui(10, 10, i), volumeResolution));
         }
         return result;
     }
 
-    std::vector<unsigned int> buildCompressedDictionary( ByteVolume* dictionaryVolume)
+    std::vector<unsigned int> buildCompressedDictionary(libmmv::ByteVolume* dictionaryVolume)
     {
         auto progress = new ProgressReporter();
         auto dictionaryBuilder = new FullDictionaryBuilder( dictionaryVolume, patchSize );
@@ -112,15 +113,15 @@ public:
     float patchWiseL2NormDifference( std::vector<unsigned int> positions )
     {
         auto debugVolume = DictionaryDebugOutput::extractDictionaryToVolume( dictionaryVolume, patchSize, positions );
-        float l2norm = DistanceBetweenConsecutiveSlabs::l2NormDistance(debugVolume, 1);
+        float l2norm = libmmv::DistanceBetweenConsecutiveSlabs::l2NormDistance(debugVolume, 1);
         delete debugVolume;
         return l2norm;
     }
 
-    ByteVolume* targetVolume;
-	ByteVolume* dictionaryVolume;
-    Vec3ui volumeResolution;
-    Vec3ui patchSize;
+    libmmv::ByteVolume* targetVolume;
+    libmmv::ByteVolume* dictionaryVolume;
+    libmmv::Vec3ui volumeResolution;
+    libmmv::Vec3ui patchSize;
     std::string workDirectory;
     std::string dataDirectory;
 };
@@ -201,7 +202,7 @@ TEST_F(ZCurveTest, PatchByteAccess)
     dictionaryVolume = initVolume();
 
     // patch center at 2/2/0
-    unsigned int patchID = Flatten3D( Vec3ui(2, 2, 0), volumeResolution );
+    unsigned int patchID = Flatten3D(libmmv::Vec3ui(2, 2, 0), volumeResolution );
     BytePatchAccess8Bit patch(dictionaryVolume, patchSize, DimensionSelection::standardPermutation( patchSize ) );
     patch.setPatchId( patchID );
 
@@ -227,7 +228,7 @@ TEST_F(ZCurveTest, SortRelativeToZCurve_775_Sum)
     std::sort( positions.begin(), positions.end(), less );
 
     DictionaryDebugOutput::writeDebugVolume( dictionaryVolume, patchSize, workDirectory + "zcurve/zcurve_debug.mrc", positions );
-    StackComparator::assertVolumesAreEqual(workDirectory + "zcurve/zcurve_debug.mrc", dataDirectory + "zcurve/zcurve_775_sum.mrc");
+    libmmv::StackComparator::assertVolumesAreEqual(workDirectory + "zcurve/zcurve_debug.mrc", dataDirectory + "zcurve/zcurve_775_sum.mrc");
     
     delete dictionaryVolume;
 }
@@ -255,7 +256,7 @@ TEST_F(ZCurveTest, SortRelativeToZCurve_Synthetic)
 
 TEST_F(ZCurveTest, DictionaryBuilder_SortUniform)
 {
-    patchSize = Vec3ui(3, 3, 1);
+    patchSize = libmmv::Vec3ui(3, 3, 1);
 
     dictionaryVolume = loadByteVolume(dataDirectory + "/zcurve/uniform_patches_dictionary.mrc");
 
@@ -270,7 +271,7 @@ TEST_F(ZCurveTest, DictionaryBuilder_SortUniform)
     std::cout << "sorted n2norm: " << sortedL2Norm << std::endl;
 
     DictionaryDebugOutput::writeDebugVolume( dictionaryVolume, patchSize,  workDirectory + "zcurve/uniform_patches_sorted.mrc", compressed);
-    StackComparator::assertVolumesAreEqual(workDirectory + "zcurve/uniform_patches_sorted.mrc", dataDirectory + "/zcurve/uniform_patches_sorted.mrc");
+    libmmv::StackComparator::assertVolumesAreEqual(workDirectory + "zcurve/uniform_patches_sorted.mrc", dataDirectory + "/zcurve/uniform_patches_sorted.mrc");
 
     ASSERT_TRUE(unsortedL2Norm > sortedL2Norm);
     ASSERT_TRUE(10.0f > sortedL2Norm);
@@ -280,7 +281,7 @@ TEST_F(ZCurveTest, DictionaryBuilder_SortUniform)
 
 TEST_F(ZCurveTest, DictionaryBuilder_SortUniform_MultipleOccurances)
 {
-    patchSize = Vec3ui(3, 3, 1);
+    patchSize = libmmv::Vec3ui(3, 3, 1);
 
     dictionaryVolume = loadByteVolume(dataDirectory + "/zcurve/uniform_patches_dictionary_x3.mrc");
 
@@ -295,7 +296,7 @@ TEST_F(ZCurveTest, DictionaryBuilder_SortUniform_MultipleOccurances)
     std::cout << "sorted n2norm: " << sortedL2Norm << std::endl;
 
     DictionaryDebugOutput::writeDebugVolume(dictionaryVolume, patchSize, workDirectory + "zcurve/uniform_patches_sorted_x3.mrc", compressed);
-    StackComparator::assertVolumesAreEqual(workDirectory + "zcurve/uniform_patches_sorted_x3.mrc", dataDirectory + "/zcurve/uniform_patches_sorted_x3.mrc");
+    libmmv::StackComparator::assertVolumesAreEqual(workDirectory + "zcurve/uniform_patches_sorted_x3.mrc", dataDirectory + "/zcurve/uniform_patches_sorted_x3.mrc");
 
     ASSERT_TRUE(unsortedL2Norm > sortedL2Norm);
     ASSERT_TRUE(10.0f > sortedL2Norm);
@@ -306,11 +307,12 @@ TEST_F(ZCurveTest, DictionaryBuilder_SortUniform_MultipleOccurances)
 TEST_F(ZCurveTest, BinarySearch)
 {
     dictionaryVolume = loadByteVolume(dataDirectory + "/zcurve/synthetic_search.mrc");
-    Vec3ui patchSize( 1, 2, 1 );
+    libmmv::Vec3ui patchSize( 1, 2, 1 );
 	// values are found in zcurv_unittest.svg
     //                                             A   B   C   D   E   F   G   H   I   J   K   L   M
     std::vector<unsigned int> dictionaryPatches { 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
-	IdentitySubspace<unsigned char> subspace( dictionaryVolume, dictionaryVolume, patchSize, DimensionSelection::standardPermutation(patchSize), dictionaryPatches, 2 );
+    auto permutation = DimensionSelection::standardPermutation(patchSize);
+	IdentitySubspace<unsigned char> subspace( dictionaryVolume, dictionaryVolume, patchSize, permutation, dictionaryPatches, 2 );
 	
 	std::vector<ZCurveEntry> dataset( dictionaryPatches.size() );
 	for (size_t i = 0; i < dictionaryPatches.size(); i++)
@@ -342,19 +344,19 @@ TEST_F(ZCurveTest, BinarySearch)
 
 TEST_F(ZCurveTest, DISABLED_Index_Permutation)
 {
-	auto sequence = DimensionSelection::customSequence(Vec3i(5, 5, 1), DimensionSelection::BOTTOMRIGHT);
+	auto sequence = DimensionSelection::customSequence(libmmv::Vec3i(5, 5, 1), DimensionSelection::BOTTOMRIGHT);
 
-	GTEST_ASSERT_EQ(sequence[0], Vec3i(2, 2, 0));
-	GTEST_ASSERT_EQ(sequence[3], Vec3i(3, 3, 0));
-	GTEST_ASSERT_EQ(sequence[8], Vec3i(4, 4, 0));
-	GTEST_ASSERT_EQ(sequence[24], Vec3i(0, 0, 0));
+	GTEST_ASSERT_EQ(sequence[0], libmmv::Vec3i(2, 2, 0));
+	GTEST_ASSERT_EQ(sequence[3], libmmv::Vec3i(3, 3, 0));
+	GTEST_ASSERT_EQ(sequence[8], libmmv::Vec3i(4, 4, 0));
+	GTEST_ASSERT_EQ(sequence[24], libmmv::Vec3i(0, 0, 0));
 
-	sequence = DimensionSelection::customSequence(Vec3i(5, 5, 1), DimensionSelection::TOPRIGHT);
+	sequence = DimensionSelection::customSequence(libmmv::Vec3i(5, 5, 1), DimensionSelection::TOPRIGHT);
 
-	GTEST_ASSERT_EQ(sequence[0], Vec3i(2, 2, 0));
-	GTEST_ASSERT_EQ(sequence[3], Vec3i(3, 1, 0));
-	GTEST_ASSERT_EQ(sequence[8], Vec3i(4, 0, 0));
-	GTEST_ASSERT_EQ(sequence[24], Vec3i(0, 4, 0));
+	GTEST_ASSERT_EQ(sequence[0], libmmv::Vec3i(2, 2, 0));
+	GTEST_ASSERT_EQ(sequence[3], libmmv::Vec3i(3, 1, 0));
+	GTEST_ASSERT_EQ(sequence[8], libmmv::Vec3i(4, 0, 0));
+	GTEST_ASSERT_EQ(sequence[24], libmmv::Vec3i(0, 4, 0));
 
-	sequence = DimensionSelection::customSequence(Vec3i(5, 5, 1), DimensionSelection::CENTER_3D);
+	sequence = DimensionSelection::customSequence(libmmv::Vec3i(5, 5, 1), DimensionSelection::CENTER_3D);
 }

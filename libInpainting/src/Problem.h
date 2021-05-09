@@ -1,29 +1,29 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention
+namespace libmmv
 {
     class FloatVolume;
     class ByteVolume;
+}
 
-    namespace inpainting 
+namespace inpainting 
+{
+
+    class Problem
     {
+    public:
+        Problem();
+        virtual ~Problem();
 
-        class Problem
-        {
-        public:
-            Problem();
-            virtual ~Problem();
+        libmmv::ByteVolume* data;
+        libmmv::ByteVolume* mask;
+        libmmv::ByteVolume* denseScan;
+        libmmv::ByteVolume* dictionaryVolume;
+        libmmv::ByteVolume* dictionaryMask;
+        libmmv::Vec3i patchSize;
+        std::vector<float> costWeight;
+    };
 
-			ByteVolume* data;
-            ByteVolume* mask;
-			ByteVolume* denseScan;
-			ByteVolume* dictionaryVolume;
-			ByteVolume* dictionaryMask;
-            Vec3i patchSize;
-            std::vector<float> costWeight;
-        };
-
-    } // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

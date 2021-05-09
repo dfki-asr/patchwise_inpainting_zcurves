@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.19)
 
 project(Inpainting)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # set cmake modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/c3di_libs/cmake")
@@ -12,12 +15,8 @@ set(LIBRARY_OUTPUT_PATH    ${EXECUTABLE_OUTPUT_PATH})
 
 include(CommonFlags)
 include(GetSourceFiles)
-include(PrecompiledHeaders)
 include(CopyDlls)
 include(CopyInpaintingDlls)
-include(Cpp11)
-
-SwitchOnCpp11()
 
 find_package(Dependencies)
 find_package(InpaintingDependencies)

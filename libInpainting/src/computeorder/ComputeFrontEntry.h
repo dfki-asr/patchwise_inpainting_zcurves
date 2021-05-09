@@ -1,19 +1,17 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention
-{
 	namespace inpainting
 	{
 
 		class ComputeFrontEntry
 		{
 		public:
-			ComputeFrontEntry(Vec3ui coordinate, float priority);
+			ComputeFrontEntry(libmmv::Vec3ui coordinate, float priority);
 			~ComputeFrontEntry();
 
-			Vec3ui coordinate;
+			libmmv::Vec3ui coordinate;
 			float priority;
 		};
 
@@ -42,4 +40,4 @@ namespace ettention
 		};
 
 	} // namespace inpainting
-} // namespace ettention
+

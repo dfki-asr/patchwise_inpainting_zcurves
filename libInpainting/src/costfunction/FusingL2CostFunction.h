@@ -3,24 +3,24 @@
 #include "DictionaryBasedCostFunctionKernel.h"
 #include "L2Distance.h"
 
-namespace ettention 
+namespace libmmv
 {
     class ByteVolume;
+}
 
-    namespace inpainting 
+namespace inpainting 
+{
+    class FusingL2CostFunction: public DictionaryBasedCostFunctionKernel 
     {
-        class FusingL2CostFunction: public DictionaryBasedCostFunctionKernel 
-        {
-        public:
-            FusingL2CostFunction( Problem* problem, Dictionary* dictionary, float denseWeight);
-            ~FusingL2CostFunction();
+    public:
+        FusingL2CostFunction( Problem* problem, Dictionary* dictionary, float denseWeight);
+        ~FusingL2CostFunction();
 
-            virtual void computeCostForInterval( IndexInterval interval ) override;
-            float computeCostFunction( unsigned int indexOfSourcePatch);
+        virtual void computeCostForInterval( IndexInterval interval ) override;
+        float computeCostFunction( unsigned int indexOfSourcePatch);
 
-        protected:
-            float denseWeight;
-            BytePatchAccess8Bit denseDataAccess;
-        };
-    }
+    protected:
+        float denseWeight;
+        BytePatchAccess8Bit denseDataAccess;
+    };
 }

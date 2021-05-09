@@ -1,11 +1,14 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention
+namespace cfg
 {
     class ParameterSource;
+}
 
+namespace inpainting
+{
     class InpaintingParameterSet
     {
     public:
@@ -15,9 +18,9 @@ namespace ettention
         ~InpaintingParameterSet();
 
         void setDefaultParameters();
-        void initializeParameters(ParameterSource* parameterSource);
+        void initializeParameters(cfg::ParameterSource* parameterSource);
 
-        Vec3ui patchSize;
+        libmmv::Vec3ui patchSize;
         std::vector<float> costWeight;
         std::filesystem::path sparseFileName;
         std::filesystem::path maskFileName;

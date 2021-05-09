@@ -2,16 +2,13 @@
 
 #include "DummyDictionary.h"
 
-namespace ettention
+namespace inpainting
 {
-	namespace inpainting
+
+	DummyDictionary::DummyDictionary()
+		: Dictionary(libmmv::Vec3ui(0,0,0), libmmv::Vec3ui(0,0,0) )
 	{
 
-		DummyDictionary::DummyDictionary()
-			: Dictionary( Vec3ui(0,0,0), Vec3ui(0,0,0) )
-		{
+	}
 
-		}
-
-	} // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

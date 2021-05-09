@@ -15,10 +15,10 @@
 
 #include "patchselection/PatchSelection.h"
 
-#include "io/deserializer/VolumeDeserializer.h"
-#include "io/serializer/VolumeSerializer.h"
+#include "libmmv/io/deserializer/VolumeDeserializer.h"
+#include "libmmv/io/serializer/VolumeSerializer.h"
 #include "setup/parameterset/OutputParameterSet.h"
-#include "evaluation/StackComparator.h"
+#include "libmmv/evaluation/StackComparator.h"
 
 #include "test/DictionaryDebugOutput.h"
 #include "setup/InpaintingDebugParameters.h"
@@ -32,16 +32,12 @@
 
 #include "InpaintingTest.h"
 
-using namespace ettention;
-using namespace ettention::inpainting;
+using namespace inpainting;
 
 class DictionaryBasedTest : public InpaintingTest
 {
 public:
-
-    Volume* costFunctionVolume;
-    GPUMappedVolume* costFunctionVolumeOnGPU;
-
+    libmmv::Volume* costFunctionVolume;
     ProgressReporter progress;
 };
 
@@ -57,12 +53,12 @@ TEST_F(DictionaryBasedTest, FullDictionaryBuilder)
 
 TEST_F(DictionaryBasedTest, DictionaryBasedCostFunctionKernel)
 {
-    setPatchSize(Vec3ui(5, 5, 1));
+    setPatchSize(libmmv::Vec3ui(5, 5, 1));
 
     loadVolumes("/data/unitTestData/costFunctions/8patches_data_toFill.mrc", "/data/unitTestData/costFunctions/8patches_mask_toFill.mrc", "/data/unitTestData/costFunctions/8patches_dictionary_toFill.mrc" );
     instantiateDictionary();
 
-    Vec3ui patchUpperLeft = Vec3ui(0, 0, 0);
+    libmmv::Vec3ui patchUpperLeft = libmmv::Vec3ui(0, 0, 0);
 
 	L2Distance<BytePatchAccess8Bit> distance;
     L2CostFunction* ssdCostFunction = new L2CostFunction( problem, dictionary );
@@ -85,13 +81,13 @@ TEST_F(DictionaryBasedTest, DictionaryBasedCostFunctionKernel)
 
 TEST_F(DictionaryBasedTest, DictionaryBased_Fusing_L1)
 {
-    problem->patchSize = Vec3ui(5, 5, 1);
+    problem->patchSize = libmmv::Vec3ui(5, 5, 1);
 
     loadVolumes("/data/unitTestData/costFunctions/8patches_dense_data_toFill.mrc", "/data/unitTestData/costFunctions/8patches_dense_mask_toFill.mrc", "/data/unitTestData/costFunctions/8patches_dense_dictionary_toFill.mrc" );
     loadDense("/data/unitTestData/costFunctions/8patches_dense_data_toFill.mrc");
     instantiateDictionary();
 
-    Vec3ui patchUpperLeft = Vec3ui(0, 0, 2);
+    libmmv::Vec3ui patchUpperLeft = libmmv::Vec3ui(0, 0, 2);
 
     FusingL1CostFunction* ssdCostFunction = new FusingL1CostFunction( problem, dictionary, 0.1f );
     ssdCostFunction->setCenterOfTargetPatch(patchUpperLeft + problem->patchSize / 2);
@@ -117,13 +113,13 @@ TEST_F(DictionaryBasedTest, DictionaryBased_Fusing_L1)
 
 TEST_F(DictionaryBasedTest, DictionaryBased_Fusing_L2)
 {
-    problem->patchSize = Vec3ui(5, 5, 1);
+    problem->patchSize = libmmv::Vec3ui(5, 5, 1);
 
     loadVolumes("/data/unitTestData/costFunctions/8patches_dense_data_toFill.mrc", "/data/unitTestData/costFunctions/8patches_dense_mask_toFill.mrc", "/data/unitTestData/costFunctions/8patches_dense_dictionary_toFill.mrc" );
     loadDense("/data/unitTestData/costFunctions/8patches_dense_data_toFill.mrc");
     instantiateDictionary();
 
-    Vec3ui patchUpperLeft = Vec3ui(0, 0, 2);
+    libmmv::Vec3ui patchUpperLeft = libmmv::Vec3ui(0, 0, 2);
 
     FusingL2CostFunction* ssdCostFunction = new FusingL2CostFunction( problem, dictionary, 0.1f);
     ssdCostFunction->setCenterOfTargetPatch(patchUpperLeft + problem->patchSize / 2);

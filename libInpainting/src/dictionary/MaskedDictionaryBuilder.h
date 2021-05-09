@@ -3,31 +3,28 @@
 #include "FullDictionaryBuilder.h"
 #include "index/PatchAccess8Bit.h"
 
-namespace ettention 
+class ByteVolume;
+
+namespace inpainting 
 {
 
-    class ByteVolume;
+    class Problem;
+    class Dictionary;
 
-    namespace inpainting 
+    class MaskedDictionaryBuilder : public FullDictionaryBuilder 
     {
+    public:
+		MaskedDictionaryBuilder( Problem* problem );
+		MaskedDictionaryBuilder( libmmv::ByteVolume* dictionaryVolume, libmmv::Vec3ui patchSize );
+        ~MaskedDictionaryBuilder();
 
-        class Problem;
-        class Dictionary;
+        virtual Dictionary* createDictionary( );
+		virtual std::vector<libmmv::Vec3ui> extractValidPatchPositions();
+		bool isPatchPositionValid(libmmv::Vec3ui patchCenterCoord );
 
-        class MaskedDictionaryBuilder : public FullDictionaryBuilder 
-        {
-        public:
-			MaskedDictionaryBuilder( Problem* problem );
-			MaskedDictionaryBuilder( ByteVolume* dictionaryVolume, Vec3ui patchSize );
-            ~MaskedDictionaryBuilder();
-
-            virtual Dictionary* createDictionary( );
-			virtual std::vector<Vec3ui> extractValidPatchPositions();
-			bool isPatchPositionValid( Vec3ui patchCenterCoord );
-
-        protected:
-            ByteVolume* dictionaryMask;
-			BytePatchAccess8Bit* patchAccess;
-        };
-    }
+    protected:
+        libmmv::ByteVolume* dictionaryMask;
+		BytePatchAccess8Bit* patchAccess;
+    };
 }
+

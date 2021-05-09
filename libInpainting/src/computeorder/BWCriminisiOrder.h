@@ -2,16 +2,13 @@
 
 #include "CriminisiOrder.h"
 
-namespace ettention
+namespace inpainting
 {
-    namespace inpainting
+    class BWCriminisiOrder : public CriminisiOrder
     {
-        class BWCriminisiOrder : public CriminisiOrder
-        {
-        public:
-			BWCriminisiOrder( Problem* problem, ProgressReporter* progress, bool regularizeConfidence = false);
-            virtual ~BWCriminisiOrder();
-        };
+    public:
+		BWCriminisiOrder( Problem* problem, ProgressReporter* progress, bool regularizeConfidence = false);
+        virtual ~BWCriminisiOrder();
+    };
 
-    } // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

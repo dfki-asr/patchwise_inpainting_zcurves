@@ -2,8 +2,7 @@
 
 #include "InpaintingFrontEnd.h"
 
-using namespace ettention;
-using namespace ettention::inpainting;
+using namespace inpainting;
 
 void printError(std::string message) noexcept
 {

@@ -2,26 +2,23 @@
 
 #include "DummyPatchSelection.h"
 
-namespace ettention
+namespace inpainting
 {
-    namespace inpainting
+
+    DummyPatchSelection::DummyPatchSelection()
+        : PatchSelection( nullptr, nullptr, nullptr)
     {
 
-        DummyPatchSelection::DummyPatchSelection()
-            : PatchSelection( nullptr, nullptr, nullptr)
-        {
+    }
 
-        }
+    libmmv::Vec3i DummyPatchSelection::selectCenterOfBestPatch(libmmv::Vec3i sourcePosition)
+    {
+        return libmmv::Vec3i(0, 0, 0);
+    }
 
-        ettention::Vec3i DummyPatchSelection::selectCenterOfBestPatch(Vec3i sourcePosition)
-        {
-            return Vec3i(0, 0, 0);
-        }
+    libmmv::Vec3i DummyPatchSelection::adjustTargetPatchPosition(libmmv::Vec3i targetPatchCenter)
+	{
+		return targetPatchCenter;
+	}
 
-		ettention::Vec3i DummyPatchSelection::adjustTargetPatchPosition(Vec3i targetPatchCenter)
-		{
-			return targetPatchCenter;
-		}
-
-	} // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

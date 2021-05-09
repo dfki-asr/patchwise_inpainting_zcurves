@@ -2,25 +2,22 @@
 
 #include "CriminisiOrder.h"
 
-namespace ettention
+namespace inpainting
 {
-    namespace inpainting
+	class Index;
+
+    class MultiChannelCriminisiOrder : public CriminisiOrder
     {
-		class Index;
+    public:
+		MultiChannelCriminisiOrder( Problem* problem, ProgressReporter* progress, bool regularizeConfidence = false);
+        ~MultiChannelCriminisiOrder();
 
-        class MultiChannelCriminisiOrder : public CriminisiOrder
-        {
-        public:
-			MultiChannelCriminisiOrder( Problem* problem, ProgressReporter* progress, bool regularizeConfidence = false);
-            ~MultiChannelCriminisiOrder();
+		virtual void addCoordinateToFront(libmmv::Vec3ui coordinate) override;
+		virtual int growFront(libmmv::BoundingBox3i region) override;
+	protected:
+		Index* index;
+        int z_resolution;
+        int z_center;
+    };
 
-			virtual void addCoordinateToFront(Vec3ui coordinate) override;
-			virtual int growFront(BoundingBox3i region) override;
-		protected:
-			Index* index;
-            int z_resolution;
-            int z_center;
-        };
-
-    } // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

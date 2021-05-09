@@ -3,16 +3,15 @@
 #include "setup/parametersource/ParameterSource.h"
 #include "setup/parametersource/CommandLineParameterSource.h"
 
-namespace ettention
+namespace inpainting
 {
     enum class CLI_APP_STATE {
         DEFAULT = 0, RECONSTRUCT, DEVICES, DEVICESANDEXTENSIONS, HELP, HELPANDPARAMETERS
     };
 
-    class InpaintingParameterSource : public CommandLineParameterSource
+    class InpaintingParameterSource : public cfg::CommandLineParameterSource
     {
     public:
-        // InpaintingParameterSource(const std::vector<std::string>& argv);
         InpaintingParameterSource(int argc, char* argv[]);
         virtual ~InpaintingParameterSource();
 

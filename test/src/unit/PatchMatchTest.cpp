@@ -3,6 +3,10 @@
 #include "gtest/gtest.h"
 #include "common/TestBase.h"
 
+#include "libmmv/io/deserializer/VolumeDeserializer.h"
+#include "libmmv/io/serializer/VolumeSerializer.h"
+#include "libmmv/evaluation/StackComparator.h"
+
 #include "costfunction/DictionaryBasedCostFunctionKernel.h"
 #include "costfunction/L2CostFunction.h"
 #include "dictionary/FullDictionaryBuilder.h"
@@ -17,12 +21,9 @@
 
 #include "patchselection/CurveBasedPatchSelection.h"
 
-#include "io/deserializer/VolumeDeserializer.h"
-#include "io/serializer/VolumeSerializer.h"
 #include "setup/parameterset/OutputParameterSet.h"
 #include "setup/InpaintingDebugParameters.h"
 #include "setup/IndexOptions.h"
-#include "evaluation/StackComparator.h"
 #include "ProgressReporter.h"
 #include "Problem.h"
 
@@ -32,8 +33,7 @@
 #include "setup/IndexOptions.h"
 #include "setup/CostFunctionOptions.h"
 
-using namespace ettention;
-using namespace ettention::inpainting;
+using namespace inpainting;
 
 class IntegrationTest : public TestBase
 {
@@ -42,7 +42,7 @@ public:
 	{
 		TestBase::SetUp();
 		problem = new Problem();
-		problem->patchSize = Vec3ui(7, 7, 5);
+		problem->patchSize = libmmv::Vec3ui(7, 7, 5);
 	}
 
 	void TearDown() override
@@ -51,20 +51,20 @@ public:
 		TestBase::TearDown();
 	}
 
-	void writeOutVolume(Volume* volume, std::string filename)
+	void writeOutVolume(libmmv::Volume* volume, std::string filename)
 	{
-		OutputParameterSet parameter;
-		VolumeSerializer serializer;
+		cfg::OutputParameterSet parameter;
+		libmmv::VolumeSerializer serializer;
 		serializer.write(volume, filename, parameter.getVoxelType(), parameter.getOrientation() );
 	}
 
 	//assumes that image and dictionary are the same
 	void loadVolumes(std::string mask, std::string data)
 	{
-		problem->mask = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(mask, Voxel::DataType::UCHAR_8));
-		problem->data = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(data, Voxel::DataType::UCHAR_8));
-		problem->dictionaryVolume = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(data, Voxel::DataType::UCHAR_8));
-		problem->dictionaryMask = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(mask, Voxel::DataType::UCHAR_8));
+		problem->mask = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(mask, libmmv::Voxel::DataType::UCHAR_8));
+		problem->data = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(data, libmmv::Voxel::DataType::UCHAR_8));
+		problem->dictionaryVolume = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(data, libmmv::Voxel::DataType::UCHAR_8));
+		problem->dictionaryMask = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(mask, libmmv::Voxel::DataType::UCHAR_8));
 	}
 
 	void computeReliableMaskUsingPatchMatch(std::string maskFile, std::string dataFile, std::string reliableMaskFile)
@@ -110,9 +110,9 @@ TEST_F(IntegrationTest, InpaintUsingDictionary)
 	std::string reliableMaskFile = std::string(TESTDATA_DIR) + "/data/patchMatch/reliableMaskStatus.mrc";
 	std::string outputFile = std::string(TESTDATA_DIR) + "/work/reliableMaskStatus.mrc";
 
-	problem->patchSize = Vec3ui(9, 9, 3);
+	problem->patchSize = libmmv::Vec3ui(9, 9, 3);
 
 	computeReliableMaskUsingPatchMatch(inputMask, inputData, outputFile);
 
-	StackComparator::assertVolumesAreEqual(reliableMaskFile, outputFile);
+	libmmv::StackComparator::assertVolumesAreEqual(reliableMaskFile, outputFile);
 }

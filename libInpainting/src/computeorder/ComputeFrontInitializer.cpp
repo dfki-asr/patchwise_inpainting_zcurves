@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "ComputeFrontInitializer.h"
-#include "model/volume/ByteVolume.h"
+#include "libmmv/model/volume/ByteVolume.h"
 #include "computeorder/ComputeFront.h"
 #include "computeorder/ComputeOrder.h"
 #include "StatusFlags.h"
@@ -9,12 +9,10 @@
 
 #include <thread>
 
-namespace ettention
-{
     namespace inpainting
     {
 
-        ComputeFrontInitializer::ComputeFrontInitializer( ComputeOrder* priority, Vec3ui patchSize, ProgressReporter* progress)
+        ComputeFrontInitializer::ComputeFrontInitializer( ComputeOrder* priority, libmmv::Vec3ui patchSize, ProgressReporter* progress)
             : progress(progress)
             , priority(priority)
             , patchSize(patchSize)
@@ -41,4 +39,3 @@ namespace ettention
         }
 
     } // namespace inpainting
-} // namespace ettention

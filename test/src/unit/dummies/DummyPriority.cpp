@@ -1,36 +1,34 @@
 #include "stdafx.h"
 
 #include "DummyPriority.h"
-#include "model/volume/ByteVolume.h"
+#include "libmmv/model/volume/ByteVolume.h"
+
 #include "computeorder/ComputeFront.h"
 
-namespace ettention
+namespace inpainting
 {
-    namespace inpainting
+    DummyPriority::DummyPriority(libmmv::ByteVolume* mask )
+        : ComputeOrder( mask )
     {
-        DummyPriority::DummyPriority( ByteVolume* mask )
-            : ComputeOrder( mask )
-        {
-        }
+    }
 
-        DummyPriority::~DummyPriority()
-        {
-        }
+    DummyPriority::~DummyPriority()
+    {
+    }
 
-        ettention::Vec3ui DummyPriority::selectCenterOfPatchToProcess(bool pop)
-        {
-            return Vec3ui(0,0,0);
-        }
+    libmmv::Vec3ui DummyPriority::selectCenterOfPatchToProcess(bool pop)
+    {
+        return libmmv::Vec3ui(0,0,0);
+    }
 
-        float DummyPriority::computePriorityForVoxel(Vec3ui coordinate)
-        {
-            return 0.0f;
-        }
+    float DummyPriority::computePriorityForVoxel(libmmv::Vec3ui coordinate)
+    {
+        return 0.0f;
+    }
 
-		void DummyPriority::setIndex(Index* index)
-		{
+	void DummyPriority::setIndex(Index* index)
+	{
 
-		}
+	}
 
-	} // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

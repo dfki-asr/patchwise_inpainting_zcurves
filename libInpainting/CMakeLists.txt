@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.19)
 project(libInpainting)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 INCLUDE(CommonFlags)
 
@@ -13,9 +16,11 @@ generate_source_tree(HOST_SOURCES "${DIRS}" "${FILE_TYPES}")
 set(LIBINPAINTING_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(LIBINPAINTING_INCLUDE_DIR ${LIBINPAINTING_INCLUDE_DIR} PARENT_SCOPE)
 
-# set include directories
+message("libInpainting DAAL_INCLUDE_DIR ${DAAL_INCLUDE_DIR}")
+message("libInpainting MKL_INCLUDE_DIR  ${MKL_INCLUDE_DIR}")
+
 include_directories("${INPAINTING_DEPENDENCIES_ROOT}"
-                    "${FREEIMAGE_INCLUDE_DIR}"
+                    "${FREEIMAGEPLUS_INCLUDE_PATH}"
 					"${MKL_INCLUDE_DIR}"
 					"${DAAL_INCLUDE_DIR}"
                     "${MEMORYMANAGER_INCLUDE_DIR}"
@@ -28,11 +33,14 @@ include_directories("${INPAINTING_DEPENDENCIES_ROOT}"
 add_library(${PROJECT_NAME} ${HOST_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} 
-				libMMV
-				)
+                      ${MKL_LIBRARIES}
+                      ${DAAL_LIBRARIES}
+					  libmmv
+					  libThreadPool
+					  )
 
 if(CMAKE_COMPILER_IS_GNUCC)
 	target_link_libraries(${PROJECT_NAME} pthread)
 endif(CMAKE_COMPILER_IS_GNUCC)
 
-add_precompiled_header(${PROJECT_NAME} stdafx.h)
+target_precompile_headers(${PROJECT_NAME} PRIVATE "${LIBINPAINTING_INCLUDE_DIR}/stdafx.h")

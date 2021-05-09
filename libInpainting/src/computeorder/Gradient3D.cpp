@@ -1,162 +1,159 @@
 #include "stdafx.h"
 
-#include "model/volume/ByteVolume.h"
+#include "libmmv/model/volume/ByteVolume.h"
 
 #include "Gradient3D.h"
 #include "../StatusFlags.h"
 
-namespace ettention
+namespace inpainting
 {
-	namespace inpainting
+
+	Gradient3D::Gradient3D()
 	{
+		initSobelStencil();
+	}
 
-		Gradient3D::Gradient3D()
+	Gradient3D::~Gradient3D()
+	{
+	}
+
+	libmmv::Vec3f Gradient3D::computeGradient(libmmv::Volume* volume, libmmv::Vec3i coordinate, bool fromMask )
+	{
+		if (coordinate.x < 0 || coordinate.y < 0 || coordinate.z < 0 || coordinate.x >= (int) volume->getProperties().getVolumeResolution().x
+			|| coordinate.y >= (int)volume->getProperties().getVolumeResolution().y || coordinate.z >= (int)volume->getProperties().getVolumeResolution().z)
+			throw std::runtime_error("coordinates out of bounds");
+
+		libmmv::ByteVolume* byteVolume = nullptr;
+		if (fromMask)
 		{
-			initSobelStencil();
+			byteVolume = dynamic_cast<libmmv::ByteVolume*>(volume);
+			if (byteVolume == nullptr)
+				throw std::runtime_error("gradient computation from mask requires byte volume");
 		}
 
-		Gradient3D::~Gradient3D()
+		libmmv::Vec3f gradient = libmmv::Vec3f(0.0f, 0.0f, 0.0f);
+
+		float tmpValue = 0.0f;
+		int i = 0;
+		for (int z = coordinate.z - 1; z <= coordinate.z + 1; z++)
 		{
-		}
-
-		Vec3f Gradient3D::computeGradient(Volume* volume, Vec3i coordinate, bool fromMask )
-		{
-			if (coordinate.x < 0 || coordinate.y < 0 || coordinate.z < 0 || coordinate.x >= (int) volume->getProperties().getVolumeResolution().x
-				|| coordinate.y >= (int)volume->getProperties().getVolumeResolution().y || coordinate.z >= (int)volume->getProperties().getVolumeResolution().z)
-				throw std::runtime_error("coordinates out of bounds");
-
-			ByteVolume* byteVolume = nullptr;
-			if (fromMask)
+			for (int y = coordinate.y - 1; y <= coordinate.y + 1; y++)
 			{
-				byteVolume = dynamic_cast<ByteVolume*>(volume);
-				if (byteVolume == nullptr)
-					throw std::runtime_error("gradient computation from mask requires byte volume");
-			}
-
-			Vec3f gradient = Vec3f(0.0f, 0.0f, 0.0f);
-
-			float tmpValue = 0.0f;
-			int i = 0;
-			for (int z = coordinate.z - 1; z <= coordinate.z + 1; z++)
-			{
-				for (int y = coordinate.y - 1; y <= coordinate.y + 1; y++)
+				for (int x = coordinate.x - 1; x <= coordinate.x + 1; x++)
 				{
-					for (int x = coordinate.x - 1; x <= coordinate.x + 1; x++)
-					{
-                        if ( x < 0 || y < 0 || z < 0 || x >= (int) volume->getProperties().getVolumeResolution().x || y >= (int) volume->getProperties().getVolumeResolution().y || z >= (int) volume->getProperties().getVolumeResolution().z)
-                            continue;
+                    if ( x < 0 || y < 0 || z < 0 || x >= (int) volume->getProperties().getVolumeResolution().x || y >= (int) volume->getProperties().getVolumeResolution().y || z >= (int) volume->getProperties().getVolumeResolution().z)
+                        continue;
 
-						if (fromMask)
-						{
-							size_t index = byteVolume->calculateVoxelIndex(Vec3ui(x, y, z));
-							tmpValue = isStatusTargetRegion(byteVolume->nativeVoxelValue(index));
-						}
-						else
-						{
-							size_t index = volume->calculateVoxelIndex(Vec3ui(x, y, z));
-							tmpValue = nanToValue(volume->getVoxelValue(index), 1.0f);
-						}
-						gradient += tmpValue * sobelStencil3D.value[i];
-						i++;
+					if (fromMask)
+					{
+						size_t index = byteVolume->calculateVoxelIndex(libmmv::Vec3ui(x, y, z));
+						tmpValue = isStatusTargetRegion(byteVolume->nativeVoxelValue(index));
 					}
+					else
+					{
+						size_t index = volume->calculateVoxelIndex(libmmv::Vec3ui(x, y, z));
+						tmpValue = nanToValue(volume->getVoxelValue(index), 1.0f);
+					}
+					gradient += tmpValue * sobelStencil3D.value[i];
+					i++;
 				}
 			}
-
-			return gradient;
 		}
 
-		Vec3f Gradient3D::computeGradientOfPatch(Volume* volume, Vec3i centerCoordinateOfPatch)
+		return gradient;
+	}
+
+	libmmv::Vec3f Gradient3D::computeGradientOfPatch(libmmv::Volume* volume, libmmv::Vec3i centerCoordinateOfPatch)
+	{
+		libmmv::Vec3i sobelSize = libmmv::Vec3i(3, 3, 3);
+		libmmv::Vec3i patchSizeHalf = (sobelSize / 2);
+
+		if (centerCoordinateOfPatch.x < patchSizeHalf.x 
+			|| centerCoordinateOfPatch.y < patchSizeHalf.y 
+			|| centerCoordinateOfPatch.z < patchSizeHalf.z
+			|| centerCoordinateOfPatch.x >= static_cast<int>(volume->getProperties().getVolumeResolution().x) - patchSizeHalf.x
+			|| centerCoordinateOfPatch.y >= static_cast<int>(volume->getProperties().getVolumeResolution().y) - patchSizeHalf.y
+			|| centerCoordinateOfPatch.z >= static_cast<int>(volume->getProperties().getVolumeResolution().z) - patchSizeHalf.z)
+			throw std::out_of_range("coordinates out of patch");
+
+		libmmv::Vec3f gradient = libmmv::Vec3f(0.0f, 0.0f, 0.0f);
+
+		float tmpValue = 0.0f;
+		int i = 0;
+		for (int z = centerCoordinateOfPatch.z - patchSizeHalf.z; z <= centerCoordinateOfPatch.z + patchSizeHalf.z; z++)
 		{
-			Vec3i sobelSize = Vec3i(3, 3, 3);
-			Vec3i patchSizeHalf = (sobelSize / 2);
-
-			if (centerCoordinateOfPatch.x < patchSizeHalf.x 
-				|| centerCoordinateOfPatch.y < patchSizeHalf.y 
-				|| centerCoordinateOfPatch.z < patchSizeHalf.z
-				|| centerCoordinateOfPatch.x >= static_cast<int>(volume->getProperties().getVolumeResolution().x) - patchSizeHalf.x
-				|| centerCoordinateOfPatch.y >= static_cast<int>(volume->getProperties().getVolumeResolution().y) - patchSizeHalf.y
-				|| centerCoordinateOfPatch.z >= static_cast<int>(volume->getProperties().getVolumeResolution().z) - patchSizeHalf.z)
-				throw std::out_of_range("coordinates out of patch");
-
-			Vec3f gradient = Vec3f(0.0f, 0.0f, 0.0f);
-
-			float tmpValue = 0.0f;
-			int i = 0;
-			for (int z = centerCoordinateOfPatch.z - patchSizeHalf.z; z <= centerCoordinateOfPatch.z + patchSizeHalf.z; z++)
+			for (int y = centerCoordinateOfPatch.y - patchSizeHalf.y; y <= centerCoordinateOfPatch.y + patchSizeHalf.y; y++)
 			{
-				for (int y = centerCoordinateOfPatch.y - patchSizeHalf.y; y <= centerCoordinateOfPatch.y + patchSizeHalf.y; y++)
+				for (int x = centerCoordinateOfPatch.x - patchSizeHalf.x; x <= centerCoordinateOfPatch.x + patchSizeHalf.x; x++)
 				{
-					for (int x = centerCoordinateOfPatch.x - patchSizeHalf.x; x <= centerCoordinateOfPatch.x + patchSizeHalf.x; x++)
-					{
-						size_t index = volume->calculateVoxelIndex(Vec3ui(x, y, z));
-						tmpValue = volume->getVoxelValue(index);
-						gradient += tmpValue * sobelStencil3D.value[i];
-						i++;
-					}
+					size_t index = volume->calculateVoxelIndex(libmmv::Vec3ui(x, y, z));
+					tmpValue = volume->getVoxelValue(index);
+					gradient += tmpValue * sobelStencil3D.value[i];
+					i++;
 				}
 			}
-
-			return gradient;
 		}
 
-		float Gradient3D::isStatusTargetRegion(unsigned char statusValue)
-		{
-			if (statusValue == TARGET_REGION)
-				return 0.0f;
-			return 1.0f;
-		}
+		return gradient;
+	}
 
-		void Gradient3D::initSobelStencil()
+	float Gradient3D::isStatusTargetRegion(unsigned char statusValue)
+	{
+		if (statusValue == TARGET_REGION)
+			return 0.0f;
+		return 1.0f;
+	}
+
+	void Gradient3D::initSobelStencil()
+	{
+		sobelStencil3D = 
 		{
-			sobelStencil3D = 
-			{
-				Vec3f(1.0f, 1.0f, 1.0f),
-				Vec3f(0.0f, 2.0f, 2.0f),
-				Vec3f(-1.0f, 1.0f, 1.0f),
-				Vec3f(2.0f, 0.0f, 2.0f),
-				Vec3f(0.0f, 0.0f, 4.0f), // 5
-				Vec3f(-2.0f, 0.0f, 2.0f),
-				Vec3f(1.0f, -1.0f, 1.0f),
-				Vec3f(0.0f, -2.0f, 2.0f),
-				Vec3f(-1.0f, -1.0f, 1.0f),
-				Vec3f(2.0f, 2.0f, 0.0f), // 10
-				Vec3f(0.0f, 4.0f, 0.0f),
-				Vec3f(-2.0f, 2.0f, 0.0f),
-				Vec3f(4.0f, 0.0f, 0.0f),
-				Vec3f(0.0f, 0.0f, 0.0f),
-				Vec3f(-4.0f, 0.0f, 0.0f), // 15
-				Vec3f(2.0f, -2.0f, 0.0f),
-				Vec3f(0.0f, -4.0f, 0.0f),
-				Vec3f(-2.0f, -2.0f, 0.0f),
-				Vec3f(1.0f, 1.0f, -1.0f),
-				Vec3f(0.0f, 2.0f, -2.0f), // 20
-				Vec3f(-1.0f, 1.0f, -1.0f),
-				Vec3f(2.0f, 0.0f, -2.0f),
-				Vec3f(0.0f, 0.0f, -4.0f),
-				Vec3f(-2.0f, 0.0f, -2.0f),
-				Vec3f(1.0f, -1.0f, -1.0f), // 25
-				Vec3f(0.0f, -2.0f, -2.0f),
-				Vec3f(-1.0f, -1.0f, -1.0f) 
-			};
+			libmmv::Vec3f(1.0f, 1.0f, 1.0f),
+			libmmv::Vec3f(0.0f, 2.0f, 2.0f),
+			libmmv::Vec3f(-1.0f, 1.0f, 1.0f),
+			libmmv::Vec3f(2.0f, 0.0f, 2.0f),
+			libmmv::Vec3f(0.0f, 0.0f, 4.0f), // 5
+			libmmv::Vec3f(-2.0f, 0.0f, 2.0f),
+			libmmv::Vec3f(1.0f, -1.0f, 1.0f),
+			libmmv::Vec3f(0.0f, -2.0f, 2.0f),
+			libmmv::Vec3f(-1.0f, -1.0f, 1.0f),
+			libmmv::Vec3f(2.0f, 2.0f, 0.0f), // 10
+			libmmv::Vec3f(0.0f, 4.0f, 0.0f),
+			libmmv::Vec3f(-2.0f, 2.0f, 0.0f),
+			libmmv::Vec3f(4.0f, 0.0f, 0.0f),
+			libmmv::Vec3f(0.0f, 0.0f, 0.0f),
+			libmmv::Vec3f(-4.0f, 0.0f, 0.0f), // 15
+			libmmv::Vec3f(2.0f, -2.0f, 0.0f),
+			libmmv::Vec3f(0.0f, -4.0f, 0.0f),
+			libmmv::Vec3f(-2.0f, -2.0f, 0.0f),
+			libmmv::Vec3f(1.0f, 1.0f, -1.0f),
+			libmmv::Vec3f(0.0f, 2.0f, -2.0f), // 20
+			libmmv::Vec3f(-1.0f, 1.0f, -1.0f),
+			libmmv::Vec3f(2.0f, 0.0f, -2.0f),
+			libmmv::Vec3f(0.0f, 0.0f, -4.0f),
+			libmmv::Vec3f(-2.0f, 0.0f, -2.0f),
+			libmmv::Vec3f(1.0f, -1.0f, -1.0f), // 25
+			libmmv::Vec3f(0.0f, -2.0f, -2.0f),
+			libmmv::Vec3f(-1.0f, -1.0f, -1.0f)
 		};
+	};
 
-		float Gradient3D::nanToValue(float oldValue, float newValue)
-		{
-			if (std::isnan(oldValue))
-				return newValue;
-			else
-				return oldValue;
-		}
+	float Gradient3D::nanToValue(float oldValue, float newValue)
+	{
+		if (std::isnan(oldValue))
+			return newValue;
+		else
+			return oldValue;
+	}
 
-		Vec3f Gradient3D::computeOrthogonalGradient(Volume* volume, Vec3i coordinate, bool fromMask)
-		{
-			Vec3f gradient = computeGradient(volume, coordinate, fromMask);
+	libmmv::Vec3f Gradient3D::computeOrthogonalGradient(libmmv::Volume* volume, libmmv::Vec3i coordinate, bool fromMask)
+	{
+		libmmv::Vec3f gradient = computeGradient(volume, coordinate, fromMask);
 
-			if (gradient.x == 0.0f)
-				return Vec3f(0.0f, -1.0f * gradient.z, gradient.y);
+		if (gradient.x == 0.0f)
+			return libmmv::Vec3f(0.0f, -1.0f * gradient.z, gradient.y);
 
-			return Vec3f(gradient.y, -1.0f * gradient.x, 0.0f);
-		}
+		return libmmv::Vec3f(gradient.y, -1.0f * gradient.x, 0.0f);
+	}
 
-	} // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

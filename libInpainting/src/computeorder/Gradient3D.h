@@ -1,38 +1,38 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention
+namespace libmmv
 {
-
 	class Volume;
+}
 
-	namespace inpainting
+namespace inpainting
+{
+	class Gradient3D
 	{
-		class Gradient3D
+	public:
+		Gradient3D();
+		~Gradient3D();
+
+		libmmv::Vec3f computeGradient(libmmv::Volume* volume, libmmv::Vec3i coordinate, bool fromMask );
+		libmmv::Vec3f computeGradientOfPatch(libmmv::Volume* volume, libmmv::Vec3i coordinate);
+		float compute3DOrientation(libmmv::Vec3f gradient);
+		float computeAverageOrientationOfPatch(libmmv::Volume* volume, libmmv::Vec3i centerCoordinateOfPatch, libmmv::Vec3i patchSize);
+		libmmv::Vec3f computeOrthogonalGradient(libmmv::Volume* volume, libmmv::Vec3i coordinate, bool fromMask);
+
+	protected:
+		float isStatusTargetRegion(unsigned char statusValue);
+		void initSobelStencil();
+
+		float nanToValue( float oldValue, float newValue );
+
+	protected:
+		struct SobelStencil
 		{
-		public:
-			Gradient3D();
-			~Gradient3D();
+			libmmv::Vec3f value[27];
+		} sobelStencil3D;
+	};
 
-			Vec3f computeGradient(Volume* volume, Vec3i coordinate, bool fromMask );
-			Vec3f computeGradientOfPatch(Volume* volume, Vec3i coordinate);
-			float compute3DOrientation(Vec3f gradient);
-			float computeAverageOrientationOfPatch(Volume* volume, Vec3i centerCoordinateOfPatch, Vec3i patchSize);
-			Vec3f computeOrthogonalGradient(Volume* volume, Vec3i coordinate, bool fromMask);
+} // namespace inpainting
 
-		protected:
-			float isStatusTargetRegion(unsigned char statusValue);
-			void initSobelStencil();
-
-			float nanToValue( float oldValue, float newValue );
-
-		protected:
-			struct SobelStencil
-			{
-				Vec3f value[27];
-			} sobelStencil3D;
-		};
-
-	} // namespace inpainting
-} // namespace ettention

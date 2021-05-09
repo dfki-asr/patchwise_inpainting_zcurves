@@ -1,34 +1,34 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention
+namespace libmmv
 {
-	class VolumeConvolutionOperator;
 	class Volume;
 	class ByteVolume;
-	
-	namespace inpainting
+}
+
+namespace inpainting
+{
+	class ComputeFront;
+	class ComputeOrder;
+	class ProgressReporter;
+
+	class ComputeFrontInitializer
 	{
-		class ComputeFront;
-		class ComputeOrder;
-		class ProgressReporter;
+	public:
+		ComputeFrontInitializer( ComputeOrder* priority, libmmv::Vec3ui patchSize, ProgressReporter* progress);
+		~ComputeFrontInitializer();
 
-		class ComputeFrontInitializer
-		{
-		public:
-			ComputeFrontInitializer( ComputeOrder* priority, Vec3ui patchSize, ProgressReporter* progress);
-			~ComputeFrontInitializer();
+		ComputeFront* generateComputeFront( );
+		size_t getSizeOfTargetArea();
 
-			ComputeFront* generateComputeFront( );
-			size_t getSizeOfTargetArea();
+	protected:
+		libmmv::Vec3ui patchSize;
+		ProgressReporter* progress;
+		ComputeOrder* priority;
+		size_t sizeOfTargetArea;
+	};
 
-		protected:
-			Vec3ui patchSize;
-			ProgressReporter* progress;
-			ComputeOrder* priority;
-			size_t sizeOfTargetArea;
-		};
+} // namespace inpainting
 
-	} // namespace inpainting
-} // namespace ettention

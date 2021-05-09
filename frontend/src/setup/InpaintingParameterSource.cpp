@@ -4,11 +4,11 @@
 
 #include "InpaintingParameterSource.h"
 
-namespace ettention
+namespace inpainting
 {
 
     InpaintingParameterSource::InpaintingParameterSource(int argc, char* argv[])
-        : CommandLineParameterSource(argc, argv)
+        : cfg::CommandLineParameterSource(argc, argv)
     {
     }
 

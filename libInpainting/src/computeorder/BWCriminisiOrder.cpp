@@ -5,23 +5,20 @@
 #include "Problem.h"
 #include "Confidence.h"
 #include "CriminisiDataTerm.h"
-#include "model/volume/ByteVolume.h"
+#include "libmmv/model/volume/ByteVolume.h"
 
-namespace ettention
+namespace inpainting
 {
-    namespace inpainting
-    {
 
-		BWCriminisiOrder::BWCriminisiOrder( Problem* problem, ProgressReporter* progress, bool regularizeConfidence /*= false*/)
-			: CriminisiOrder( problem, progress, regularizeConfidence )
-		{
-			dataTerm = new CriminisiDataTerm(problem->data, problem->mask, problem->patchSize);
-		}
+	BWCriminisiOrder::BWCriminisiOrder(Problem* problem, ProgressReporter* progress, bool regularizeConfidence /*= false*/)
+		: CriminisiOrder( problem, progress, regularizeConfidence )
+	{
+		dataTerm = new CriminisiDataTerm(problem->data, problem->mask, problem->patchSize);
+	}
 
-		BWCriminisiOrder::~BWCriminisiOrder()
-		{
+	BWCriminisiOrder::~BWCriminisiOrder()
+	{
 
-		}
+	}
 
-	} // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

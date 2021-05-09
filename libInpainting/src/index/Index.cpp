@@ -2,20 +2,18 @@
 
 #include "Index.h"
 
-namespace ettention
+namespace inpainting
 {
-    namespace inpainting
-    {
 
-		IndexCannotHandlePositionError::IndexCannotHandlePositionError(Vec3i targetPatchCenter, Vec3i minPosition, Vec3i maxPosition)
-			: std::runtime_error("unable to adjust target patch position " + targetPatchCenter.to_string() + " to manageable position, tried shifting from " + minPosition.to_string() + " to " + maxPosition.to_string() )
-			, targetPatchCenter(targetPatchCenter)
-		{
-		}
+	IndexCannotHandlePositionError::IndexCannotHandlePositionError(libmmv::Vec3i targetPatchCenter, libmmv::Vec3i minPosition, libmmv::Vec3i maxPosition)
+		: std::runtime_error("unable to adjust target patch position " + targetPatchCenter.to_string() + " to manageable position, tried shifting from " + minPosition.to_string() + " to " + maxPosition.to_string() )
+		, targetPatchCenter(targetPatchCenter)
+	{
+	}
 
-		Index::~Index()
-		{
-		}
+	Index::~Index()
+	{
+	}
 
-	} // namespace
 } // namespace
+

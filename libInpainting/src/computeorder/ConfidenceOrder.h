@@ -1,44 +1,45 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 #include "ComputeOrder.h"
 
-namespace ettention
+namespace libmmv
 {
 	class Volume;
+}
 	
-	namespace inpainting
+namespace inpainting
+{
+	class ComputeFront;
+	class Confidence;
+	class CriminisiDataTerm;
+	class ProgressReporter;
+
+	class ConfidenceOrder : public ComputeOrder
 	{
-		class ComputeFront;
-		class Confidence;
-		class CriminisiDataTerm;
-		class ProgressReporter;
+	public:
+		ConfidenceOrder( libmmv::Volume* dataVolume, libmmv::ByteVolume* maskVolume, libmmv::Vec3ui patchSize, ProgressReporter* progress);
+		~ConfidenceOrder();
 
-		class ConfidenceOrder : public ComputeOrder
-		{
-		public:
-			ConfidenceOrder( Volume* dataVolume, ByteVolume* maskVolume, Vec3ui patchSize, ProgressReporter* progress);
-			~ConfidenceOrder();
+		virtual libmmv::Vec3ui selectCenterOfPatchToProcess(bool shouldPopPatch);
+		virtual float computePriorityForVoxel(libmmv::Vec3ui coordinate);
 
-			virtual Vec3ui selectCenterOfPatchToProcess(bool shouldPopPatch);
-			virtual float computePriorityForVoxel(Vec3ui coordinate);
+        virtual void outputDebugVolumes(std::string pathToDebugFolder, unsigned int iterationNumber, InpaintingDebugParameters* parameters) override;
 
-            virtual void outputDebugVolumes(std::string pathToDebugFolder, unsigned int iterationNumber, InpaintingDebugParameters* parameters) override;
+		// for testing
+		libmmv::Volume* plotConfidenceToVolume();
+		libmmv::Volume* plotDataTermToVolume();
+		libmmv::Volume* plotImageGradientToVolume();
+		libmmv::Volume* plotMaskNormalToVolume();
+		libmmv::Volume* plotComputeFrontToVolume();
 
-			// for testing
-			Volume* plotConfidenceToVolume();
-			Volume* plotDataTermToVolume();
-			Volume* plotImageGradientToVolume();
-			Volume* plotMaskNormalToVolume();
-			Volume* plotComputeFrontToVolume();
+	protected:
+		ProgressReporter* progress;
+		libmmv::ByteVolume* maskVolume;
+		libmmv::Volume* dataVolume;
+		Confidence* confidence;
+		CriminisiDataTerm* dataTerm;
+	};
 
-		protected:
-			ProgressReporter* progress;
-			ByteVolume* maskVolume;
-			Volume* dataVolume;
-			Confidence* confidence;
-			CriminisiDataTerm* dataTerm;
-		};
+} // namespace inpainting
 
-	} // namespace inpainting
-} // namespace ettention

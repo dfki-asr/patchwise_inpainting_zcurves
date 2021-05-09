@@ -4,6 +4,10 @@
 
 #include "common/TestBase.h"
 
+#include "libmmv/io/deserializer/VolumeDeserializer.h"
+#include "libmmv/io/serializer/VolumeSerializer.h"
+#include "libmmv/evaluation/StackComparator.h"
+
 #include "costfunction/L2CostFunction.h"
 #include "dictionary/FullDictionaryBuilder.h"
 #include "dictionary/Dictionary.h"
@@ -17,12 +21,9 @@
 
 #include "patchselection/CurveBasedPatchSelection.h"
 
-#include "io/deserializer/VolumeDeserializer.h"
-#include "io/serializer/VolumeSerializer.h"
 #include "setup/parameterset/OutputParameterSet.h"
 #include "setup/InpaintingDebugParameters.h"
 #include "setup/IndexOptions.h"
-#include "evaluation/StackComparator.h"
 #include "ProgressReporter.h"
 #include "Problem.h"
 
@@ -32,8 +33,7 @@
 #include "setup/IndexOptions.h"
 #include "setup/CostFunctionOptions.h"
 
-using namespace ettention;
-using namespace ettention::inpainting;
+using namespace inpainting;
 
 class IntegrationTest: public TestBase
 {
@@ -42,7 +42,7 @@ public:
     {
         TestBase::SetUp();
         problem = new Problem();
-        problem->patchSize = Vec3ui(7, 7, 5);
+        problem->patchSize = libmmv::Vec3ui(7, 7, 5);
     }
 
     void TearDown() override
@@ -51,20 +51,20 @@ public:
         TestBase::TearDown();
     }
 
-    void writeOutVolume(Volume* volume, std::string filename)
+    void writeOutVolume( libmmv::Volume* volume, std::string filename)
     {
-        OutputParameterSet parameter;
-        VolumeSerializer serializer;
+        cfg::OutputParameterSet parameter;
+        libmmv::VolumeSerializer serializer;
         serializer.write(volume, filename, parameter.getVoxelType(), parameter.getOrientation() );
     }
 
     void loadVolumes(std::string mask, std::string data, std::string dictionary)
     {
-        problem->mask = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(mask, Voxel::DataType::UCHAR_8));
+        problem->mask = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(mask, libmmv::Voxel::DataType::UCHAR_8));
 
-        problem->data = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(data, Voxel::DataType::UCHAR_8));
+        problem->data = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(data, libmmv::Voxel::DataType::UCHAR_8));
 
-        problem->dictionaryVolume = dynamic_cast<ByteVolume*>(ettention::VolumeDeserializer::load(dictionary, Voxel::DataType::UCHAR_8));
+        problem->dictionaryVolume = dynamic_cast<libmmv::ByteVolume*>(libmmv::VolumeDeserializer::load(dictionary, libmmv::Voxel::DataType::UCHAR_8));
     }
 
     void releaseVolumes( )
@@ -106,9 +106,8 @@ public:
         releaseVolumes();
     }
 
-    Volume* costFunctionVolume;
-    GPUMappedVolume* costFunctionVolumeOnGPU;
-
+    libmmv::Volume* costFunctionVolume;
+    
     Problem* problem;
 
     ProgressReporter progress;
@@ -120,14 +119,14 @@ TEST_F(IntegrationTest, InpaintUsingDictionary)
     std::string inpaintedFile = std::string(TESTDATA_DIR) + "/work/stripes_after_dictionary_inpainting.mrc";
     std::string referenceFile = std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes_after_dictionary_inpainting.mrc";
     
-    problem->patchSize = Vec3ui(7, 7, 5);
+    problem->patchSize = libmmv::Vec3ui(7, 7, 5);
 
     performInpaintingUsingZCurve(   std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/mask_square_32.mrc",
                                     std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes.mrc",
                                     std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes_dictionary.mrc",
                                     inpaintedFile, referenceFile, true, false);
 
-    StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
 }
 
 TEST_F(IntegrationTest, InpaintUsingZCurve)
@@ -135,14 +134,14 @@ TEST_F(IntegrationTest, InpaintUsingZCurve)
     std::string inpaintedFile = std::string(TESTDATA_DIR) + "/work/stripes_after_zcurve_inpainting.mrc";
     std::string referenceFile = std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes_after_dictionary_inpainting.mrc";
 
-    problem->patchSize = Vec3ui(7, 7, 5);
+    problem->patchSize = libmmv::Vec3ui(7, 7, 5);
 
     performInpaintingUsingZCurve(std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/mask_square_32.mrc",
                                  std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes.mrc",
                                  std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes_dictionary.mrc", 
                                  inpaintedFile, referenceFile, false, false);
 
-    StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
 }
 
 TEST_F(IntegrationTest, InpaintUsingDictionary_Debug)
@@ -150,14 +149,14 @@ TEST_F(IntegrationTest, InpaintUsingDictionary_Debug)
     std::string inpaintedFile = std::string(TESTDATA_DIR) + "/work/stripes_3D_inpainted_forDebugging.mrc";
     std::string referenceFile = std::string(TESTDATA_DIR) + "/data/integrationTestData/stripes_3D_inpainted_forDebugging.mrc";
 
-    problem->patchSize = Vec3ui(3, 3, 3);
+    problem->patchSize = libmmv::Vec3ui(3, 3, 3);
 
     performInpaintingUsingZCurve(   std::string(TESTDATA_DIR) + "/data/integrationTestData/stripes_3D_mask_forDebugging.mrc",
                                     std::string(TESTDATA_DIR) + "/data/integrationTestData/stripes_3D_data_forDebugging.mrc",
                                     std::string(TESTDATA_DIR) + "/data/integrationTestData/stripes_3D_dictionary_forDebugging3.mrc",
                                     inpaintedFile, referenceFile, true, false);
 
-    StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
 }
 
 TEST_F(IntegrationTest, groundTruthInpainting_2D)
@@ -165,13 +164,13 @@ TEST_F(IntegrationTest, groundTruthInpainting_2D)
     std::string inpaintedFile = std::string(TESTDATA_DIR) + "/work/duke_2D_inpainted.mrc";
     std::string referenceFile = std::string(TESTDATA_DIR) + "/data/integrationTestData/duke_2D_perfectInpainting.mrc";
 
-    problem->patchSize = Vec3ui(9, 9, 1);
+    problem->patchSize = libmmv::Vec3ui(9, 9, 1);
     performInpaintingUsingZCurve(   std::string(TESTDATA_DIR) + "/data/integrationTestData/duke_2D_mask_withBorder.mrc",
                                     std::string(TESTDATA_DIR) + "/data/integrationTestData/duke_2D_data_withBorder.mrc",
                                     std::string(TESTDATA_DIR) + "/data/integrationTestData/duke_2D_dictionary_withBorder.mrc",
                                     inpaintedFile, referenceFile, true, false);
 
-    StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
 }
 
 TEST_F(IntegrationTest, groundTruthInpainting_3D_big)
@@ -179,13 +178,13 @@ TEST_F(IntegrationTest, groundTruthInpainting_3D_big)
     std::string inpaintedFile = std::string(TESTDATA_DIR) + "/work/duke_3D_big_inpainted.mrc";
     std::string referenceFile = std::string(TESTDATA_DIR) + "/data/integrationTestData/duke_3D_big_perfectInpainting.mrc";
 
-    problem->patchSize = Vec3ui(9, 9, 9);
+    problem->patchSize = libmmv::Vec3ui(9, 9, 9);
     performInpaintingUsingZCurve(   std::string(TESTDATA_DIR) + "/data/integrationTestData/duke_3D_big_mask_withBorder.mrc",
                                     std::string(TESTDATA_DIR) + "/data/integrationTestData/duke_3D_big_data_withBorder.mrc",
                                     std::string(TESTDATA_DIR) + "/data/integrationTestData/duke_3D_big_dictionary_withBorder.mrc",
                                     inpaintedFile, referenceFile, true, false);
 
-    StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
 }
 
 TEST_F(IntegrationTest, groundTruthInpainting_2D_mini)
@@ -193,13 +192,13 @@ TEST_F(IntegrationTest, groundTruthInpainting_2D_mini)
     std::string inpaintedFile = std::string(TESTDATA_DIR) + "/work/data_inpainted.mrc";
     std::string referenceFile = std::string(TESTDATA_DIR) + "/data/integrationTestData/data_inpainted.mrc";
 
-    problem->patchSize = Vec3ui(5, 5, 1);
+    problem->patchSize = libmmv::Vec3ui(5, 5, 1);
     performInpaintingUsingZCurve(   std::string(TESTDATA_DIR) + "/data/integrationTestData/mask.mrc",
                                     std::string(TESTDATA_DIR) + "/data/integrationTestData/data.mrc",
                                     std::string(TESTDATA_DIR) + "/data/integrationTestData/dictionary.mrc",
                                     inpaintedFile, referenceFile, true, false);
 
-    StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
 }
 
 TEST_F(IntegrationTest, BorderHandling)
@@ -207,12 +206,12 @@ TEST_F(IntegrationTest, BorderHandling)
     std::string inpaintedFile = std::string(TESTDATA_DIR) + "/work/stripes_after_dictionary_inpainting_border.mrc";
     std::string referenceFile = std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes_after_dictionary_inpainting.mrc";
 
-    problem->patchSize = Vec3ui(7, 7, 7);
+    problem->patchSize = libmmv::Vec3ui(7, 7, 7);
 
     performInpaintingUsingZCurve(   std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/mask_border_32.mrc",
                                     std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes_border_input.mrc",
                                     std::string(TESTDATA_DIR) + "/data/unitTestData/stripes/stripes_border_dictionary3.mrc",
                                     inpaintedFile, referenceFile, true, false);
 
-    StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
+    libmmv::StackComparator::assertVolumesAreEqual(inpaintedFile, referenceFile);
 }

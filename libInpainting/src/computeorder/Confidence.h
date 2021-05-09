@@ -1,29 +1,30 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention
+namespace libmmv
 {
 	class ByteVolume;
+}
 
-	namespace inpainting
+namespace inpainting
+{
+
+	class Confidence
 	{
+	public:
+		// maskVolume must be a float volume that contains 0.0 in the target region and 1.0 in the source region
+		Confidence(libmmv::ByteVolume* maskVolume, libmmv::Vec3ui patchSize, bool regularizeConfidence = false );
+		~Confidence();
 
-		class Confidence
-		{
-		public:
-			// maskVolume must be a float volume that contains 0.0 in the target region and 1.0 in the source region
-			Confidence(ByteVolume* maskVolume, Vec3ui patchSize, bool regularizeConfidence = false );
-			~Confidence();
+		float computeConfidenceOfOneVoxel(libmmv::Vec3i patchCenterCoord, size_t inpaintingIterationNumber );
+        bool regularizeConfidence;
 
-			float computeConfidenceOfOneVoxel( Vec3i patchCenterCoord, size_t inpaintingIterationNumber );
-            bool regularizeConfidence;
+	protected:
+		libmmv::ByteVolume* maskVolume;
+		libmmv::Vec3ui volumeResolution;
+		libmmv::Vec3i patchSize;
+	};
 
-		protected:
-			ByteVolume* maskVolume;
-			Vec3ui volumeResolution;
-			Vec3i patchSize;
-		};
+} // namespace inpainting
 
-	} // namespace inpainting
-} // namespace ettention

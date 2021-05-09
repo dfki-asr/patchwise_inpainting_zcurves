@@ -2,32 +2,32 @@
 
 #include "setup/parameterset/ParameterSet.h"
 
-namespace ettention
+namespace cfg 
 {
-    class ParameterSource;
+	class ParameterSource;
+}
 
-    namespace inpainting
+namespace inpainting
+{
+    class InpaintingOptimizationParameters : public cfg::ParameterSet
     {
-        class InpaintingOptimizationParameters : public ParameterSet
-        {
-        public:
-            InpaintingOptimizationParameters(const ParameterSource* parameterSource);
-            InpaintingOptimizationParameters();
-            ~InpaintingOptimizationParameters();
+    public:
+        InpaintingOptimizationParameters(const cfg::ParameterSource* parameterSource);
+        InpaintingOptimizationParameters();
+        ~InpaintingOptimizationParameters();
 
-			bool shouldUseParallelComputation();
-			unsigned int getMinimalNumberOfDataPointsToUseDifferentCore();
-			unsigned int getThresholdForZCurveQuery();
-			float getTypicalCostFunctionValue();
-			float getCostFunctionRelaxationIncrement();
+		bool shouldUseParallelComputation();
+		unsigned int getMinimalNumberOfDataPointsToUseDifferentCore();
+		unsigned int getThresholdForZCurveQuery();
+		float getTypicalCostFunctionValue();
+		float getCostFunctionRelaxationIncrement();
 
-        private:
-			bool useParallelComputation;
-			unsigned int minimalNumberOfDataPointsToUseDifferentCore;
-			unsigned int thresholdForZCurveQuery;
-			float typicalCostFunctionValue;
-			float costFunctionRelaxationIncrement;
+    private:
+		bool useParallelComputation;
+		unsigned int minimalNumberOfDataPointsToUseDifferentCore;
+		unsigned int thresholdForZCurveQuery;
+		float typicalCostFunctionValue;
+		float costFunctionRelaxationIncrement;
 
-        };
-    }
+    };
 }

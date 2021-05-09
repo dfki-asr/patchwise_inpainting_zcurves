@@ -1,50 +1,49 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 #include <chrono>
 
-namespace ettention
+namespace libmmv
 {
-
     class FloatVolume;
-    class ByteVolume; 
+    class ByteVolume;
+}
 
-    /*
-	    This base class determines the way a patch is selected for inpainting to be able to use
-	    acceleration structures. Inheriting from this class is used to define accelerated  
-    */
+/*
+	This base class determines the way a patch is selected for inpainting to be able to use
+	acceleration structures. Inheriting from this class is used to define accelerated  
+*/
 
-    namespace inpainting {
+namespace inpainting {
 
-		class Index;
+	class Index;
 
-        typedef std::pair<unsigned int, unsigned int> Interval;
-        typedef std::vector<Interval> IntervalList;
+    typedef std::pair<unsigned int, unsigned int> Interval;
+    typedef std::vector<Interval> IntervalList;
 
-        class PatchSelection
-        {
-        public:
-            PatchSelection( ByteVolume* dataVolume, ByteVolume* maskVolume, ByteVolume* dictionaryVolume );
-            virtual ~PatchSelection();
+    class PatchSelection
+    {
+    public:
+        PatchSelection(libmmv::ByteVolume* dataVolume, libmmv::ByteVolume* maskVolume, libmmv::ByteVolume* dictionaryVolume );
+        virtual ~PatchSelection();
 
-			virtual Vec3i adjustTargetPatchPosition(Vec3i targetPatchCenter) = 0;
-            virtual Vec3i selectCenterOfBestPatch(Vec3i sourcePosition) = 0;
-			virtual void activateBruteForceFallback();
+		virtual libmmv::Vec3i adjustTargetPatchPosition(libmmv::Vec3i targetPatchCenter) = 0;
+        virtual libmmv::Vec3i selectCenterOfBestPatch(libmmv::Vec3i sourcePosition) = 0;
+		virtual void activateBruteForceFallback();
 
-			//used for several iterations inside patch match, may need reworking in terms of proper software design
-			virtual void computeCostAfterIteration();
-			virtual bool initializeNewIteration();
+		//used for several iterations inside patch match, may need reworking in terms of proper software design
+		virtual void computeCostAfterIteration();
+		virtual bool initializeNewIteration();
 
-            float lastCostFunctionValue;
+        float lastCostFunctionValue;
 
-            // remove after runtime optimization
-            std::chrono::nanoseconds timeArgumentSettingTook = std::chrono::nanoseconds(0);
-			unsigned int iterationNumber;
+        // remove after runtime optimization
+        std::chrono::nanoseconds timeArgumentSettingTook = std::chrono::nanoseconds(0);
+		unsigned int iterationNumber;
 
-        protected:
-			ByteVolume* dictionaryVolume;
-			ByteVolume* dataVolume;
-            ByteVolume* maskVolume;
-        };
-    }
+    protected:
+        libmmv::ByteVolume* dictionaryVolume;
+        libmmv::ByteVolume* dataVolume;
+        libmmv::ByteVolume* maskVolume;
+    };
 }

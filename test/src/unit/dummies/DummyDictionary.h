@@ -2,21 +2,21 @@
 
 #include "dictionary/Dictionary.h"
 
-namespace ettention
+namespace libmmv
 {
 	class Volume;
+}
 
-	namespace inpainting
+namespace inpainting
+{
+	class ComputeFront;
+	class Confidence;
+	class DataTerm;
+
+	class DummyDictionary : public Dictionary
 	{
-		class ComputeFront;
-		class Confidence;
-		class DataTerm;
+	public:
+		DummyDictionary();
+	};
 
-		class DummyDictionary : public Dictionary
-		{
-		public:
-			DummyDictionary();
-		};
-
-	} // namespace inpainting
-} // namespace ettention
+} // namespace inpainting

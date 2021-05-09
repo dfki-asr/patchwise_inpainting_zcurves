@@ -4,8 +4,8 @@
 
 #include "common/TestBase.h"
 #include "parallel/ThreadPool.h"
-#include "algorithm/Coordinates.h"
-#include "io/deserializer/VolumeDeserializer.h"
+#include "libmmv/algorithm/Coordinates.h"
+#include "libmmv/io/deserializer/VolumeDeserializer.h"
 
 #include "pca/PCASubspace.h"
 #include "index/DimensionSelection.h"
@@ -16,8 +16,7 @@
 #include "zcurve/ZCurveIndex.h"
 #include "setup/IndexOptions.h"
 
-using namespace ettention;
-using namespace ettention::inpainting;
+using namespace inpainting;
 
 class IndexSerialization: public TestBase
 {
@@ -27,7 +26,7 @@ public:
         TestBase::SetUp();
         workDirectory = std::string(TESTDATA_DIR) + "/work/";
         dataDirectory = std::string(TESTDATA_DIR) + "/data/";        
-        patchSize = Vec3ui(5, 5, 1);
+        patchSize = libmmv::Vec3ui(5, 5, 1);
     }
 
     void TearDown() override
@@ -35,13 +34,13 @@ public:
         TestBase::TearDown();
     }
 
-    ByteVolume* loadByteVolume(std::string filename)
+	libmmv::ByteVolume* loadByteVolume(std::string filename)
     {
-        auto volume = (ByteVolume*) VolumeDeserializer::load(filename, Voxel::DataType::UCHAR_8);
+        auto volume = (libmmv::ByteVolume*) libmmv::VolumeDeserializer::load(filename, libmmv::Voxel::DataType::UCHAR_8);
         return volume;
     }
 
-    Vec3ui patchSize;
+	libmmv::Vec3ui patchSize;
     std::string workDirectory;
     std::string dataDirectory;
 };
@@ -83,7 +82,7 @@ TEST_F(IndexSerialization, WriteThenReadZCurveIndex)
 
 	ProgressReporter progress;
 	Log log;
-	ThreadPool threadPool( false );
+	ettention::ThreadPool threadPool( false );
 	CostFunctionOptions costFunctionOptions;
 
 	auto writtenIndex = new ZCurveIndex( &threadPool, data, mask, dictionary, patchKeys, patchSize, DimensionSelection::TOPLEFT, 20, 10, 50, 128, false, 128, &progress, &log, &costFunctionOptions );

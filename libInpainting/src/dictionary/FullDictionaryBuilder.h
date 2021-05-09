@@ -1,32 +1,31 @@
 #pragma once
 
-#include "math/Vec3.h"
+#include "libmmv/math/Vec3.h"
 
-namespace ettention 
+namespace libmmv 
+{
+    class ByteVolume;
+}
+
+namespace inpainting 
 {
 
-    class ByteVolume;
+    class Problem;
+    class Dictionary;
 
-    namespace inpainting 
+    class FullDictionaryBuilder 
     {
+    public:
+        FullDictionaryBuilder( Problem* problem );
+        FullDictionaryBuilder(libmmv::ByteVolume* dictionaryVolume, libmmv::Vec3ui patchSize );
+        ~FullDictionaryBuilder();
 
-        class Problem;
-        class Dictionary;
+        virtual Dictionary* createDictionary( );
+		virtual std::vector<libmmv::Vec3ui> extractValidPatchPositions();
+		virtual std::vector<unsigned int> extractValidPatchIndices();
 
-        class FullDictionaryBuilder 
-        {
-        public:
-            FullDictionaryBuilder( Problem* problem );
-            FullDictionaryBuilder( ByteVolume* dictionaryVolume, Vec3ui patchSize );
-            ~FullDictionaryBuilder();
-
-            virtual Dictionary* createDictionary( );
-			virtual std::vector<Vec3ui> extractValidPatchPositions();
-			virtual std::vector<unsigned int> extractValidPatchIndices();
-
-        protected:
-			ByteVolume* dictionaryVolume;
-            Vec3ui patchSize;
-        };
-    }
+    protected:
+        libmmv::ByteVolume* dictionaryVolume;
+        libmmv::Vec3ui patchSize;
+    };
 }

@@ -1,35 +1,35 @@
 #pragma once
 
-#include "math/Vec2.h"
+#include "libmmv/math/Vec2.h"
 
-namespace ettention
+namespace libmmv
 {
 	class Volume;
 	class ByteVolume;
+}
 
-	namespace inpainting
+namespace inpainting
+{
+	class Gradient2D
 	{
-		class Gradient2D
+	public:
+		Gradient2D();
+		~Gradient2D();
+
+		libmmv::Vec2f computeGradient(libmmv::Volume* volume, libmmv::ByteVolume* mask, libmmv::Vec3i coordinate, bool fromMask );
+		libmmv::Vec2f computeSimpleGradient(libmmv::Volume* volume, libmmv::ByteVolume* mask, libmmv::Vec3i coordinate, bool fromMask);
+		libmmv::Vec2f computeOrthogonalGradient(libmmv::Volume* volume, libmmv::ByteVolume* mask, libmmv::Vec3i coordinate, bool fromMask);
+
+	protected:
+		float isStatusTargetRegion(unsigned char statusValue);
+		void initSobelStencil();
+
+	protected:
+		struct SobelStencil
 		{
-		public:
-			Gradient2D();
-			~Gradient2D();
+			libmmv::Vec2f value[9];
+		} sobelStencil2D;
+	};
 
-			Vec2f computeGradient(Volume* volume, ByteVolume* mask, Vec3i coordinate, bool fromMask );
-			Vec2f computeSimpleGradient(Volume* volume, ByteVolume* mask, Vec3i coordinate, bool fromMask);
-// NOT NEEDED?			Vec2f computeGradientOfPatch(Volume* volume, ByteVolume* mask, Vec3i coordinate, bool fromMask);
-			Vec2f computeOrthogonalGradient(Volume* volume, ByteVolume* mask, Vec3i coordinate, bool fromMask);
+} // namespace inpainting
 
-		protected:
-			float isStatusTargetRegion(unsigned char statusValue);
-			void initSobelStencil();
-
-		protected:
-			struct SobelStencil
-			{
-				Vec2f value[9];
-			} sobelStencil2D;
-		};
-
-	} // namespace inpainting
-} // namespace ettention
