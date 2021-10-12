@@ -6,10 +6,8 @@
 #include "libmmv/io/deserializer/ImageDeserializer.h"
 #include "libmmv/io/serializer/MRCWriter.h"
 
-#include "setup/parameterset/OutputParameterSet.h"
-#include "setup/parametersource/XMLParameterSource.h"
-
-#include <memory/MemoryListener.h>
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parametersource/XMLParameterSource.h"
 
 namespace inpainting
 {
@@ -36,7 +34,7 @@ namespace inpainting
     {
         setUpCalled = true;
         const ::testing::TestInfo* const test_info = ::testing::UnitTest::GetInstance()->current_test_info();
-        listener = new ettention::MemoryListener(test_info->test_case_name() + std::string(".") + test_info->name());
+        listener = new memoryManager::MemoryListener(test_info->test_case_name() + std::string(".") + test_info->name());
     }
 
     void TestBase::TearDown()
@@ -58,7 +56,7 @@ namespace inpainting
     void TestBase::writeOutVolume(const std::string &filename, libmmv::Volume* volume, libmmv::CoordinateOrder order /* = ORDER_XZY */)
     {
         libmmv::MRCWriter writer;
-        const cfg::OutputParameterSet format(libmmv::IO_VOXEL_TYPE_FLOAT_32, order);
+        const libCFG::OutputParameterSet format(libmmv::IO_VOXEL_TYPE_FLOAT_32, order);
         writer.write(volume, filename, format.getVoxelType(), format.getOrientation());
     }
 

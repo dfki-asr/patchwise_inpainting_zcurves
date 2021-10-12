@@ -6,7 +6,7 @@
 #include "index/DimensionSelection.h"
 #include "index/PatchAccess8Bit.h"
 #include "InpaintingTest.h"
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 #include "setup/IndexOptions.h"
 #include "libmmv/evaluation/StackComparator.h"
 #include "idistance/IDistanceIndex.h"

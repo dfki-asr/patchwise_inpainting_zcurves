@@ -2,7 +2,7 @@
 
 #include "InpaintingParameterSet.h"
 
-#include "setup/parametersource/ParameterSource.h"
+#include "libCFG/setup/parametersource/ParameterSource.h"
 
 namespace inpainting
 {
@@ -31,7 +31,7 @@ namespace inpainting
         printTraversalInformation = false;
     }
 
-    void InpaintingParameterSet::initializeParameters(cfg::ParameterSource* parameterSource)
+    void InpaintingParameterSet::initializeParameters(libCFG::ParameterSource* parameterSource)
     {
         patchSize = parameterSource->getVec3uiParameter("patchSize");
         sparseFileName = parameterSource->getPathParameter("sparseFile");

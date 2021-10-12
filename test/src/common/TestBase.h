@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "libmmv/model/volume/Volume.h"
+#include <memoryManager/memory/MemoryListener.h>
 
 namespace ettention 
 {
@@ -33,7 +34,7 @@ namespace inpainting
 
     private:
         unsigned int beginState;
-        ettention::MemoryListener* listener;
+        memoryManager::MemoryListener* listener;
         bool setUpCalled;
         bool tearDownCalled;
     };

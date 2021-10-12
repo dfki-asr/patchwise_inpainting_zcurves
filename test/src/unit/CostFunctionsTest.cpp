@@ -17,7 +17,7 @@
 
 #include "libmmv/io/deserializer/VolumeDeserializer.h"
 #include "libmmv/io/serializer/VolumeSerializer.h"
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 #include "libmmv/evaluation/StackComparator.h"
 
 #include "test/DictionaryDebugOutput.h"

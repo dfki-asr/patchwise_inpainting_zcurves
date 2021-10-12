@@ -13,7 +13,7 @@
 #include "dictionary/FullDictionaryBuilder.h"
 #include "dictionary/Dictionary.h"
 
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 
 #include "Problem.h"
 
@@ -41,7 +41,7 @@ void InpaintingTest::TearDown()
 
 void InpaintingTest::writeOutVolume(libmmv::Volume* volume, std::string filename)
 {
-    cfg::OutputParameterSet parameter(libmmv::VoxelValueType::IO_VOXEL_TYPE_UNSIGNED_8 );
+    libCFG::OutputParameterSet parameter(libmmv::VoxelValueType::IO_VOXEL_TYPE_UNSIGNED_8 );
     libmmv::VolumeSerializer serializer;
     serializer.write(volume, filename, parameter.getVoxelType(), parameter.getOrientation() );
 }

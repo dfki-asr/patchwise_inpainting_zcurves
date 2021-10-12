@@ -3,7 +3,7 @@
 #include "setup/InpaintingParameterSet.h"
 #include "ConsoleProgressReporter.h"
 
-namespace cfg
+namespace libCFG
 {
     class ParameterSource;
 }
@@ -28,13 +28,13 @@ namespace inpainting
     public: 
         InpaintingFrontEnd(int argc, char* argv[]);
         ~InpaintingFrontEnd();
-        void handlePrintDevicesCommand(cfg::ParameterSource* parameterSource);
+        void handlePrintDevicesCommand(libCFG::ParameterSource* parameterSource);
         DictionaryBasedCostFunctionKernel* instantiateCostFunction();
         PatchSelection* instantiatePatchSelection();
         ComputeOrder* instantiatePriority();
         void initializeProblem();
         void instantiateDictionary();
-        cfg::ParameterSource* handleCommandLine(int argc, char* argv[]);
+        libCFG::ParameterSource* handleCommandLine(int argc, char* argv[]);
         void performInpainting();
         
     protected:
@@ -45,7 +45,7 @@ namespace inpainting
         ComputeOrder* priority;
         PatchSelection* patchSelection;
         InpaintingOperator* inpainter;
-        cfg::ParameterSource* parameterSource;
+        libCFG::ParameterSource* parameterSource;
         InpaintingParameterSet parameterStorage;
         InpaintingDebugParameters* debugParameters;
         InpaintingOptimizationParameters* optimizationParameters;

@@ -5,7 +5,7 @@
 #include "libmmv/algorithm/Coordinates.h"
 #include "libmmv/model/volume/ByteVolume.h"
 #include "libmmv/io/serializer/VolumeSerializer.h"
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 
 namespace inpainting 
 {
@@ -42,7 +42,7 @@ namespace inpainting
     void DictionaryDebugOutput::writeDebugVolume( libmmv::ByteVolume* dictionaryVolume, libmmv::Vec3ui patchSize, std::string filename, std::vector<unsigned int> positions)
     {
         auto debugVolume = extractDictionaryToVolume(dictionaryVolume, patchSize, positions );
-        cfg::OutputParameterSet parameter;
+        libCFG::OutputParameterSet parameter;
         libmmv::VolumeSerializer serializer;
         serializer.write( debugVolume, filename, parameter.getVoxelType(), parameter.getOrientation() );
         delete debugVolume;

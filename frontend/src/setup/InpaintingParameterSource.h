@@ -1,7 +1,7 @@
 #pragma once
 
-#include "setup/parametersource/ParameterSource.h"
-#include "setup/parametersource/CommandLineParameterSource.h"
+#include "libCFG/setup/parametersource/ParameterSource.h"
+#include "libCFG/setup/parametersource/CommandLineParameterSource.h"
 
 namespace inpainting
 {
@@ -9,7 +9,7 @@ namespace inpainting
         DEFAULT = 0, RECONSTRUCT, DEVICES, DEVICESANDEXTENSIONS, HELP, HELPANDPARAMETERS
     };
 
-    class InpaintingParameterSource : public cfg::CommandLineParameterSource
+    class InpaintingParameterSource : public libCFG::CommandLineParameterSource
     {
     public:
         InpaintingParameterSource(int argc, char* argv[]);

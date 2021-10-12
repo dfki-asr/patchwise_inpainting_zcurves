@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "setup/CostFunctionOptions.h"
-#include "setup/parametersource/ParameterSource.h"
+#include "libCFG/setup/parametersource/ParameterSource.h"
 
 namespace inpainting
 {
@@ -11,7 +11,7 @@ namespace inpainting
 		costFunctionType = CostFunctionType::L2;
 	}
 
-	CostFunctionOptions::CostFunctionOptions(const cfg::ParameterSource* parameterSource)
+	CostFunctionOptions::CostFunctionOptions(const libCFG::ParameterSource* parameterSource)
 	{
 		costFunctionType = CostFunctionType::L2;
 		if (parameterSource->parameterExists("costFunction"))

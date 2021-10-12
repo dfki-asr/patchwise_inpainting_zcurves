@@ -8,7 +8,7 @@
 #include "libmmv/io/serializer/VolumeSerializer.h"
 #include "libmmv/evaluation/StackComparator.h"
 
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 
 #include "computeorder/ComputeFront.h"
 #include "computeorder/ComputeFrontEntry.h"

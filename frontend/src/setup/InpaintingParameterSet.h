@@ -2,7 +2,7 @@
 
 #include "libmmv/math/Vec3.h"
 
-namespace cfg
+namespace libCFG
 {
     class ParameterSource;
 }
@@ -18,7 +18,7 @@ namespace inpainting
         ~InpaintingParameterSet();
 
         void setDefaultParameters();
-        void initializeParameters(cfg::ParameterSource* parameterSource);
+        void initializeParameters(libCFG::ParameterSource* parameterSource);
 
         libmmv::Vec3ui patchSize;
         std::vector<float> costWeight;

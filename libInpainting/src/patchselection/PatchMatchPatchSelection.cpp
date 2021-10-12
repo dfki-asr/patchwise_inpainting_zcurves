@@ -17,7 +17,7 @@
 
 #include "index/MaskedIndex.h"
 #include "libmmv/io/serializer/VolumeSerializer.h"
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 
 namespace inpainting
 {
@@ -479,7 +479,7 @@ namespace inpainting
 			}
 		}
 
-/*		cfg::OutputParameterSet parameter;
+/*		libCFG::OutputParameterSet parameter;
 		libmmv::VolumeSerializer serializer;
 		throw std::runtime_error("legacy code smell alarm")
 		std::string filename = "D:/forEBI/test/unreliablePixelsInserted.mrc";
@@ -607,7 +607,7 @@ namespace inpainting
 					reliableVolume.setVoxelToByteValue(currentIndex, status);
 				}
 
-		cfg::OutputParameterSet parameter;
+		libCFG::OutputParameterSet parameter;
 		libmmv::VolumeSerializer serializer;
 		serializer.write(&reliableVolume, filename, parameter.getVoxelType(), parameter.getOrientation() );
 	}

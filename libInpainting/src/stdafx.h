@@ -17,6 +17,7 @@
 #include <random>
 #include <filesystem>
 #include <future>
+#include <list>
 
 //
 // c headers
@@ -29,8 +30,8 @@
 //
 // dependencies
 //
-#include <Eigen/Eigen>
+//#include <Eigen/Eigen>
 #include <daal.h>
 #include <mkl.h>
 
-#include <memory/MemoryLeakDetection.h>
+#include <memoryManager/memory/MemoryLeakDetection.h>

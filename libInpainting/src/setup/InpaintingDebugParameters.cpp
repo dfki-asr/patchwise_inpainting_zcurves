@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
 #include "InpaintingDebugParameters.h"
-#include "setup/parametersource/ParameterSource.h"
+#include "libCFG/setup/parametersource/ParameterSource.h"
 
 namespace inpainting
 {
 
-    InpaintingDebugParameters::InpaintingDebugParameters(const cfg::ParameterSource* parameterSource)
+    InpaintingDebugParameters::InpaintingDebugParameters(const libCFG::ParameterSource* parameterSource)
     {
         debugInfoPath = std::filesystem::path("debug");
         if (parameterSource->parameterExists("debug.infoPath"))

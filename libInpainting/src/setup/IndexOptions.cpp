@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "IndexOptions.h"
-#include "setup/parametersource/ParameterSource.h"
+#include "libCFG/setup/parametersource/ParameterSource.h"
 
 namespace inpainting
 {
@@ -15,7 +15,7 @@ namespace inpainting
 		minSizeForRecursion = 1024;
 	}
 
-	IndexOptions::IndexOptions(const cfg::ParameterSource* parameterSource)
+	IndexOptions::IndexOptions(const libCFG::ParameterSource* parameterSource)
 		: IndexOptions()
 	{
 		if (parameterSource->parameterExists("index.knnFilterSize"))

@@ -2,16 +2,16 @@
 
 #include "InpaintingFrontEnd.h"
 
-#include "error/ParameterNotFoundException.h"
+#include "libCFG/error/ParameterNotFoundException.h"
 
 #include "libmmv/io/deserializer/VolumeDeserializer.h"
 #include "libmmv/io/serializer/VolumeSerializer.h"
 
-#include "setup/parameterset/OutputParameterSet.h"
-#include "setup/parametersource/CommandLineParameterSource.h"
-#include "setup/parametersource/ParameterSource.h"
-#include "setup/parametersource/XMLParameterSource.h"
-#include "setup/parametersource/CascadingParameterSource.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parametersource/CommandLineParameterSource.h"
+#include "libCFG/setup/parametersource/ParameterSource.h"
+#include "libCFG/setup/parametersource/XMLParameterSource.h"
+#include "libCFG/setup/parametersource/CascadingParameterSource.h"
 #include "setup/InpaintingParameterSource.h"
 
 #include "InpaintingOperator.h"
@@ -88,7 +88,7 @@ namespace inpainting
         delete parameterSource;
     }
         
-    void InpaintingFrontEnd::handlePrintDevicesCommand(cfg::ParameterSource* parameterSource)
+    void InpaintingFrontEnd::handlePrintDevicesCommand(libCFG::ParameterSource* parameterSource)
     {
         if( parameterSource->parameterExists("devices") )
         {
@@ -244,7 +244,7 @@ namespace inpainting
 		}
     }
 
-    cfg::ParameterSource* InpaintingFrontEnd::handleCommandLine(int argc, char* argv[])
+    libCFG::ParameterSource* InpaintingFrontEnd::handleCommandLine(int argc, char* argv[])
     {
         auto commandLineParameterSource = new InpaintingParameterSource(argc, argv);
         commandLineParameterSource->parse();
@@ -254,9 +254,9 @@ namespace inpainting
 
         auto configFileName = commandLineParameterSource->getStringParameter("config");
         std::cout << "Loading configuration from XML file " << configFileName << std::endl;
-        auto xmlParameterSource = new cfg::XMLParameterSource( configFileName );
+        auto xmlParameterSource = new libCFG::XMLParameterSource( configFileName );
 
-        auto cascadingParameterSource = new cfg::CascadingParameterSource();
+        auto cascadingParameterSource = new libCFG::CascadingParameterSource();
         cascadingParameterSource->addSource(commandLineParameterSource);
         cascadingParameterSource->parseAndAddSource(xmlParameterSource);
 
@@ -269,7 +269,7 @@ namespace inpainting
 
 		inpainter->run();
 
-        cfg::OutputParameterSet options;
+        libCFG::OutputParameterSet options;
         libmmv::VolumeSerializer volumeSerializer;
     	volumeSerializer.write(problem->data, parameterStorage.outputFileName.string() + ".mrc", options.getVoxelType(), options.getOrientation() );
 

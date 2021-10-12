@@ -21,7 +21,7 @@
 
 #include "patchselection/CurveBasedPatchSelection.h"
 
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 #include "setup/InpaintingDebugParameters.h"
 #include "setup/IndexOptions.h"
 #include "ProgressReporter.h"
@@ -53,7 +53,7 @@ public:
 
 	void writeOutVolume(libmmv::Volume* volume, std::string filename)
 	{
-		cfg::OutputParameterSet parameter;
+		libCFG::OutputParameterSet parameter;
 		libmmv::VolumeSerializer serializer;
 		serializer.write(volume, filename, parameter.getVoxelType(), parameter.getOrientation() );
 	}

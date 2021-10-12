@@ -1,14 +1,14 @@
 #pragma once
 
-#include "setup/parameterset/ParameterSet.h"
+#include "libCFG/setup/parameterset/ParameterSet.h"
 
-namespace cfg {
+namespace libCFG {
 	class ParameterSource;
 }
 
 namespace inpainting 
 {
-	class CostFunctionOptions : public cfg::ParameterSet 
+	class CostFunctionOptions : public libCFG::ParameterSet 
 	{
 	public:
 		enum class CostFunctionType
@@ -19,7 +19,7 @@ namespace inpainting
 		};
 
 		CostFunctionOptions();
-		CostFunctionOptions(const cfg::ParameterSource* parameterSource);
+		CostFunctionOptions(const libCFG::ParameterSource* parameterSource);
 		virtual ~CostFunctionOptions();
 
 		CostFunctionType getCostFunctionType();

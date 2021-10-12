@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
 #include "InpaintingOptimizationParameters.h"
-#include "setup/parametersource/ParameterSource.h"
+#include "libCFG/setup/parametersource/ParameterSource.h"
 
 namespace inpainting
 {
 
-    InpaintingOptimizationParameters::InpaintingOptimizationParameters(const cfg::ParameterSource* parameterSource)
+    InpaintingOptimizationParameters::InpaintingOptimizationParameters(const libCFG::ParameterSource* parameterSource)
     {
 		useParallelComputation = false;
 		if (parameterSource->parameterExists("optimization.parallelComputation"))

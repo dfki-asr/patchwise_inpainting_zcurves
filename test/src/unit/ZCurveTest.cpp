@@ -10,7 +10,7 @@
 #include "libmmv/io/deserializer/VolumeDeserializer.h"
 #include "libmmv/algorithm/Coordinates.h"
 
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 
 #include "ProgressReporter.h"
 #include "dictionary/FullDictionaryBuilder.h"

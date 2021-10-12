@@ -8,7 +8,7 @@
 #include "computeorder/CriminisiOrder.h"
 
 #include "libmmv/io/serializer/VolumeSerializer.h"
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 
 namespace inpainting 
 {
@@ -45,7 +45,7 @@ namespace inpainting
 
     void IntermediateOutputProgressReporter::handleProgressReport()
     {
-        cfg::OutputParameterSet options;
+        libCFG::OutputParameterSet options;
         libmmv::VolumeSerializer serializer;
 
         for (auto it : targets)

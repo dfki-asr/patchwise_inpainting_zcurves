@@ -1,15 +1,15 @@
 #pragma once
 
-#include "setup/parameterset/ParameterSet.h"
+#include "libCFG/setup/parameterset/ParameterSet.h"
 
-namespace cfg 
+namespace libCFG 
 {
 	class ParameterSource;
 }
 
 namespace inpainting 
 {
-	class IndexOptions : public cfg::ParameterSet 
+	class IndexOptions : public libCFG::ParameterSet 
 	{
 	public:
 		enum class IndexType
@@ -22,7 +22,7 @@ namespace inpainting
 		};
 
 		IndexOptions();
-		IndexOptions(const cfg::ParameterSource* parameterSource);
+		IndexOptions(const libCFG::ParameterSource* parameterSource);
 		virtual ~IndexOptions();
 
 		int getKNNFilterSize();

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "setup/parametersource/anyoption.h"
+#include "libCFG/setup/parametersource/anyoption.h"
 
 #include "InpaintingParameterSource.h"
 
@@ -8,7 +8,6 @@ namespace inpainting
 {
 
     InpaintingParameterSource::InpaintingParameterSource(int argc, char* argv[])
-        : cfg::CommandLineParameterSource(argc, argv)
     {
     }
 

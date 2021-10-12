@@ -1,18 +1,18 @@
 #pragma once
 
-#include "setup/parameterset/ParameterSet.h"
+#include "libCFG/setup/parameterset/ParameterSet.h"
 
-namespace cfg 
+namespace libCFG 
 {
 	class ParameterSource;
 }
 
 namespace inpainting
 {
-    class InpaintingOptimizationParameters : public cfg::ParameterSet
+    class InpaintingOptimizationParameters : public libCFG::ParameterSet
     {
     public:
-        InpaintingOptimizationParameters(const cfg::ParameterSource* parameterSource);
+        InpaintingOptimizationParameters(const libCFG::ParameterSource* parameterSource);
         InpaintingOptimizationParameters();
         ~InpaintingOptimizationParameters();
 

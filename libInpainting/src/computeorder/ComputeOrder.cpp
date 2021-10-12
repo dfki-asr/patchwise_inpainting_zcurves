@@ -5,7 +5,7 @@
 #include "libmmv/model/volume/ByteVolume.h"
 #include "libmmv/model/volume/FloatVolume.h"
 
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 #include "setup/InpaintingDebugParameters.h"
 
 #include "StatusFlags.h"
@@ -69,7 +69,7 @@ namespace inpainting
 
 	void ComputeOrder::outputDebugVolumes(std::string pathToDebugFolder, unsigned int iterationNumber, InpaintingDebugParameters* parameters)
     {
-        cfg::OutputParameterSet parameter;
+        libCFG::OutputParameterSet parameter;
         libmmv::VolumeSerializer serializer;
 
 		if (parameters->shouldOutputFillFront())

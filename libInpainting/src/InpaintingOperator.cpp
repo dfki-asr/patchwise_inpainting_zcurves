@@ -15,7 +15,7 @@
 #include "Problem.h"
 
 #include "libmmv/io/serializer/VolumeSerializer.h"
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 
 #include "setup/InpaintingDebugParameters.h"
 #include "setup/InpaintingOptimizationParameters.h"
@@ -74,7 +74,7 @@ namespace inpainting
 
     void InpaintingOperator::outputDebugVolumes()
     {
-        cfg::OutputParameterSet parameter;
+        libCFG::OutputParameterSet parameter;
         libmmv::VolumeSerializer serializer;
 
 		if (debugParameters->shouldOutputData())

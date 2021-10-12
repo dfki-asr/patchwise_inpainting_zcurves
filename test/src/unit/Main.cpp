@@ -8,6 +8,8 @@ int main(int argc, char** argv)
     auto result = RUN_ALL_TESTS();
 #ifdef _WINDOWS
     system("pause");
+#else
+    std::cin.ignore();
 #endif
     return result;
 }

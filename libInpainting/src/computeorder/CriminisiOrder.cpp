@@ -4,7 +4,7 @@
 #include "Problem.h"
 
 #include "libmmv/io/serializer/VolumeSerializer.h"
-#include "setup/parameterset/OutputParameterSet.h"
+#include "libCFG/setup/parameterset/OutputParameterSet.h"
 #include "setup/InpaintingDebugParameters.h"
 
 #include "Problem.h"
@@ -62,7 +62,7 @@ namespace inpainting
 	{
 		ComputeOrder::outputDebugVolumes(pathToDebugFolder, iterationNumber, parameters);
 
-		cfg::OutputParameterSet parameter;
+		libCFG::OutputParameterSet parameter;
 		libmmv::VolumeSerializer serializer;
 
 		if (parameters->shouldOutputPriority())
