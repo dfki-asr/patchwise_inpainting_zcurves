@@ -1,4 +1,4 @@
 [submodule "c3di_libs"]
 	path = c3di_libs
 	url = https://iceland.sb.dfki.de/bitbucket/scm/sof/c3di_libs.git
-    branch = master
+    branch = inpainting
