@@ -22,11 +22,7 @@ find_package(Dependencies)
 find_package(InpaintingDependencies)
 
 # utilities
-add_subdirectory(c3di_libs/memoryManager)
-add_subdirectory(c3di_libs/libMMV)
-add_subdirectory(c3di_libs/libThreadPool)
-add_subdirectory(c3di_libs/libTimer)
-add_subdirectory(c3di_libs/libCFG)
+add_subdirectory(c3di_libs)
 
 # utilities
 add_subdirectory(libInpainting)
