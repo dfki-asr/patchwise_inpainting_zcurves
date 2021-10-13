@@ -33,7 +33,6 @@ include_directories("${INPAINTING_DEPENDENCIES_ROOT}"
 add_library(${PROJECT_NAME} ${HOST_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-                      ${MKL_LIBRARIES}
                       MemoryManager
                       intel_onedal_core
                       intel_mkl_lp64
