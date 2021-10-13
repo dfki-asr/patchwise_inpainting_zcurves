@@ -26,7 +26,10 @@ add_executable(${PROJECT_NAME} ${HOST_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} 
                 ${MKL_LIBRARIES}
-                ${DAAL_LIBRARIES}
+                intel_onedal_core
+                intel_mkl_lp64
+                intel_mkl_core
+                intel_mkl_seq
                 libTimer
                 libmmv
                 libCFG
@@ -37,9 +40,13 @@ target_link_libraries(${PROJECT_NAME}
 if(CMAKE_COMPILER_IS_GNUCC)
     target_link_options(${PROJECT_NAME} PRIVATE ${MKL_LINKER_OPTIONS})
     target_link_directories(${PROJECT_NAME} PRIVATE ${MKL_ROOT_DIR}/lib/intel64/ ${TBB_LIB_DIR} ${DAAL_LIB_DIR})
+    target_link_libraries(${PROJECT_NAME} intel_onedal_seq)
+    # if gcc version <9 we also need to link the stdc++fs library to support c++17's filesystem extension
+    IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+        target_link_libraries(${PROJECT_NAME} stdc++fs)
+    ENDIF()
 endif(CMAKE_COMPILER_IS_GNUCC)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/stdafx.h")
 
-CopyDlls()
 CopyInpaintingDlls()

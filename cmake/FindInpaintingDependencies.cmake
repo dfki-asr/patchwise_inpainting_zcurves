@@ -23,129 +23,63 @@ find_path(INPAINTING_DEPENDENCIES_ROOT
 # find MKL 
 ################
 
+file(TO_CMAKE_PATH "$ENV{MKLROOT}" MKL_ROOT_DIR)
+message("-- Linking Intel MKL: Looking in ${MKL_ROOT_DIR}")
+
+add_library(intel_mkl_core SHARED IMPORTED REQUIRED)
+add_library(intel_mkl_seq SHARED IMPORTED REQUIRED)
+add_library(intel_mkl_lp64 SHARED IMPORTED REQUIRED)
+
 if (WIN32)
-	find_path(MKL_ROOT_DIR
-	  NAMES lib/mkl_core_dll.lib
-	  HINTS ${INPAINTING_DEPENDENCIES_ROOT}/mkl
-	  DOC "MKL root directory")
-  
-	find_library(MKL_CORE_LIB
-	  NAMES mkl_core_dll
-	  HINTS ${MKL_ROOT_DIR}/lib
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	find_library(MKL_LP64_LIB
-	  NAMES mkl_intel_lp64_dll
-	  HINTS ${MKL_ROOT_DIR}/lib
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	find_library(MKL_SEQUENTIAL_LIB
-	  NAMES mkl_sequential_dll
-	  HINTS ${MKL_ROOT_DIR}/lib
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	set(MKL_LIBRARIES "${MKL_CORE_LIB} ${MKL_LP64_LIB} ${MKL_SEQUENTIAL_LIB}" CACHE INTERNAL "Intel MKL Libraries" )
+	set_target_properties(intel_mkl_core PROPERTIES IMPORTED_LOCATION ${MKL_ROOT_DIR}/redist/intel64/mkl_core.1.dll)
+	set_target_properties(intel_mkl_core PROPERTIES IMPORTED_IMPLIB ${MKL_ROOT_DIR}/lib/intel64/mkl_core_dll.lib)
+	set_target_properties(intel_mkl_core PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${MKL_ROOT_DIR}/include)
+	
+	set_target_properties(intel_mkl_seq PROPERTIES IMPORTED_LOCATION ${MKL_ROOT_DIR}/redist/intel64/mkl_sequential.1.dll)
+	set_target_properties(intel_mkl_seq PROPERTIES IMPORTED_IMPLIB ${MKL_ROOT_DIR}/lib/intel64/mkl_sequential_dll.lib)
+	set_target_properties(intel_mkl_seq PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${MKL_ROOT_DIR}/include)
+	
+	#set_target_properties(intel_mkl_lp64 PROPERTIES IMPORTED_LOCATION ${MKL_ROOT_DIR}/redist/intel64/mkl_intel_ilp64_dll.lib)
+	set_target_properties(intel_mkl_lp64 PROPERTIES IMPORTED_IMPLIB ${MKL_ROOT_DIR}/lib/intel64/mkl_intel_ilp64_dll.lib)
+	set_target_properties(intel_mkl_lp64 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${MKL_ROOT_DIR}/include)
 endif (WIN32)
 
-
 if (UNIX)
-	message( STATUS "ENV MKLROOT $ENV{MKLROOT}" )
-
-	find_path(MKL_ROOT_DIR
-	  NAMES lib/intel64/libmkl_core.a
-	  HINTS ENV "MKLROOT"
-	  DOC "MKL root directory")
-
-	message( STATUS "MKL_ROOT_DIR ${MKL_ROOT_DIR}" )
-
-	find_library(MKL_CORE_LIB
-	  NAMES libmkl_core.a
-	  HINTS ${MKL_ROOT_DIR}
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	message( STATUS "MKL_CORE_LIB ${MKL_CORE_LIB}" )
-
-	find_library(MKL_LP64_LIB
-	  NAMES libmkl_intel_ilp64.a
-	  HINTS ${MKL_ROOT_DIR}
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	message( STATUS "MKL_LP64_LIB ${MKL_LP64_LIB}" )	
-
-	find_library(MKL_SEQUENTIAL_LIB
-	  NAMES libmkl_sequential.a
-	  HINTS ${MKL_ROOT_DIR}
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	message( STATUS "MKL_SEQUENTIAL_LIB ${MKL_SEQUENTIAL_LIB}" )
-
-	set(MKL_LIBRARIES "-lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -lpthread -lm -ldl" CACHE INTERNAL "Intel MKL Libraries" )
-	set(MKL_LINKER_OPTIONS "-Wl,--no-as-needed")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMKL_ILP64 -m64")
-	message( STATUS "MKL_LIBRARIES ${MKL_LIBRARIES}" )
-
+	set_target_properties(intel_mkl_core PROPERTIES IMPORTED_LOCATION ${MKL_ROOT_DIR}/lib/intel64/libmkl_core.so)
+	set_target_properties(intel_mkl_core PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${MKL_ROOT_DIR}/include)
+	
+	set_target_properties(intel_mkl_seq PROPERTIES IMPORTED_LOCATION ${MKL_ROOT_DIR}/lib/intel64/libmkl_sequential.so)
+	set_target_properties(intel_mkl_seq PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${MKL_ROOT_DIR}/include)
+	
+	set_target_properties(intel_mkl_lp64 PROPERTIES IMPORTED_LOCATION ${MKL_ROOT_DIR}/lib/intel64/libmkl_intel_ilp64.so)
+	set_target_properties(intel_mkl_lp64 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${MKL_ROOT_DIR}/include)
 endif (UNIX)
 
 set(MKL_INCLUDE_DIR ${MKL_ROOT_DIR}/include/ CACHE INTERNAL "MKL Include Directory" )
-  
-find_package_handle_standard_args(mkl REQUIRED_VARS MKL_ROOT_DIR )
+
 
 ################
 # find DAAL 
 ################
 
+file(TO_CMAKE_PATH "$ENV{DAALROOT}" DAAL_ROOT_DIR)
+message("-- Linking Intel OneDAL: Looking in ${DAAL_ROOT_DIR}")
+
+add_library(intel_onedal_core SHARED IMPORTED REQUIRED)
+
 if (WIN32)
-	find_path(DAAL_ROOT_DIR
-	  NAMES lib/daal_core_dll.lib
-	  HINTS ${INPAINTING_DEPENDENCIES_ROOT}/daal
-	  DOC "DAAL root directory")
-    
-	find_library(DBB_LIB
-	  NAMES tbb.lib
-	  HINTS ${DAAL_ROOT_DIR}/lib
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	find_library(DBB_MALLOC_LIB
-	  NAMES tbbmalloc.lib
-	  HINTS ${DAAL_ROOT_DIR}/lib
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-  
-	find_library(DAAL_CORE_LIB
-	  NAMES daal_core_dll.lib
-	  HINTS ${DAAL_ROOT_DIR}/lib
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	set(DAAL_LIBRARIES ${DBB_LIB} ${DBB_MALLOC_LIB} ${DAAL_CORE_LIB} CACHE INTERNAL "Intel DAAL Libraries" ) 
+	set_target_properties(intel_onedal_core PROPERTIES IMPORTED_LOCATION ${DAAL_ROOT_DIR}/redist/intel64/onedal_core.dll)
+	set_target_properties(intel_onedal_core PROPERTIES IMPORTED_IMPLIB ${DAAL_ROOT_DIR}/lib/intel64/onedal_core_dll.lib)
+	set_target_properties(intel_onedal_core PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${DAAL_ROOT_DIR}/include)
 endif (WIN32)
 
 if (UNIX)
-	message( STATUS "ENV DAALROOT $ENV{MKLROOT}" )
-
-	find_path(DAAL_ROOT_DIR
-	  NAMES lib/intel64/libdaal_core.so
-	  HINTS ENV "DAALROOT"
-	  DOC "DAAL root directory")
-
-	  set(DAAL_LIB_DIR "${DAAL_ROOT_DIR}/lib/intel64/")
-	  message( STATUS "DAAL_LIB_DIR ${DAAL_LIB_DIR}" )
-
-	  find_library(DAAL_CORE_LIB
-	  NAMES libdaal_core.so
-	  HINTS ${DAAL_ROOT_DIR}
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	  message( STATUS "DAAL_CORE_LIB ${DAAL_CORE_LIB}" )
-
-	  find_library(DAAL_CORE_SEQ
-	  NAMES libdaal_sequential.so
-	  HINTS ${DAAL_ROOT_DIR}
-	  PATH_SUFFIXES ${POSSIBLE_LIB_SUFFIXES})
-
-	  message( STATUS "DAAL_CORE_SEQ ${DAAL_CORE_SEQ}" )
-
-	  set(DAAL_LIBRARIES -ldaal_core -ldaal_sequential CACHE INTERNAL "Intel DAAL Libraries" )   
+	set_target_properties(intel_onedal_core PROPERTIES IMPORTED_LOCATION ${DAAL_ROOT_DIR}/lib/intel64/libonedal_core.so)
+	set_target_properties(intel_onedal_core PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${DAAL_ROOT_DIR}/include)
+	
+	add_library(intel_onedal_seq SHARED IMPORTED REQUIRED)
+	set_target_properties(intel_onedal_seq PROPERTIES IMPORTED_LOCATION ${DAAL_ROOT_DIR}/lib/intel64/libonedal_sequential.so)
+	set_target_properties(intel_onedal_seq PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${DAAL_ROOT_DIR}/include)
 endif (UNIX)
 
 set(DAAL_INCLUDE_DIR ${DAAL_ROOT_DIR}/include/ CACHE INTERNAL "DAAL Include Directory" )
-  
-find_package_handle_standard_args(daal REQUIRED_VARS MKL_ROOT_DIR )
