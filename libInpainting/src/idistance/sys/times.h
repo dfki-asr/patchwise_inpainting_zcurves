@@ -34,9 +34,9 @@ clock_t times (struct tms *__buffer);
  
 typedef long long suseconds_t ;
  
-#endif
 #else
 
-#include <times.h>
+#include <sys/time.h>
 
+#endif
 #endif

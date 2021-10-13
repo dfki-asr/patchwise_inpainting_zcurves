@@ -25,7 +25,7 @@ of the License. See the COPYING file for more information.
 #include <algorithm>
 #include <string>
 
-#include <sys/time.h>
+#include "sys/times.h"
 
 #include "helper.h"
 

@@ -3,7 +3,7 @@
 #include<vector>
 
 #include "stx/btree_multimap.h"
-#include "sys/time.h"
+#include "sys/times.h"
 
 using namespace std;
 
