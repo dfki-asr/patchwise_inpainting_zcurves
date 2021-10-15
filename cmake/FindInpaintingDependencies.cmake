@@ -55,6 +55,8 @@ if (UNIX)
 	set_target_properties(intel_mkl_lp64 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${MKL_ROOT_DIR}/include)
 endif (UNIX)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMKL_ILP64")
+
 set(MKL_INCLUDE_DIR ${MKL_ROOT_DIR}/include/ CACHE INTERNAL "MKL Include Directory" )
 
 
